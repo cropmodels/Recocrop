@@ -2,8 +2,8 @@ Package: ecocrop
 Description: The EcoCrop model estimates environmental suitability for plants using a limiting factor approach. 
 Type: Package
 Title: Environmental limiting factors model for plant adaptation
-Version: 0.0-1
-Date: 2020-03-29
+Version: 0.0-2
+Date: 2020-03-30
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Imports: meteor, methods (>= 0.2-2), Rcpp (>= 0.12.4)

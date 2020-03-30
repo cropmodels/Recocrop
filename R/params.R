@@ -1,5 +1,5 @@
 
-ecocropPars <- function(name) {
+ecocropPars <- function(name, ...) {
 	fname <- system.file("parameters/ecocrop.rds", package="ecocrop")
 	d <- readRDS(fname)
 	d$NAME = gsub("\\*", "", d$NAME)
@@ -17,6 +17,10 @@ ecocropPars <- function(name) {
 	
 	i <- which(d1==nam)
 	if (length(i)==0) i <- which(d2==nam)
+    if (length(i)==0) {
+		d3 <- trimws(sapply(strsplit(d2, " "), function(i) paste(i[1], i[2], collapse=" ")))
+		i <- which(d3==nam)
+	}
 	
 	if (length(i) > 1) {
 		cat("multiple matches found, use scientific name\n")
@@ -42,7 +46,7 @@ ecocropPars <- function(name) {
 		f <- d[i,]
 		x <- as.list(f[1:3])
 		x$duration <- floor((f$GMIN + f$GMAX) / 61)
-		x$tmin <- c(-Inf, f$KTMP-1, f$KTMP+1, Inf)
+		x$ktmp <- c(-Inf, f$KTMP-1, f$KTMP+1, Inf)
 		x$tavg <- c(f$TMIN, f$TOPMN, f$TOPMX, f$TMAX)
 		
 		prec <- c(f$RMIN, f$ROPMN, f$ROPMX, f$RMAX)
@@ -53,4 +57,4 @@ ecocropPars <- function(name) {
 }
 
 
-#str(ecocrop_parameters("potato"))
+#str(ecocropParas("potato"))

@@ -1,6 +1,6 @@
 import(Rcpp)
 import(meteor)
 importFrom("methods", "new")
-exportMethods("crop<-", "weather<-", "soil<-", "control<-", "run")
-exportPattern("^[[:alpha:]]+")
+exportMethods("dynamicPredictors<-", "staticPredictors<-", "parameters<-", "options<-", "run")
+export(ecocrop, ecocropPars, removeParameters, removePredictor)
 useDynLib(ecocrop, .registration = TRUE)

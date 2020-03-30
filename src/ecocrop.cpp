@@ -34,19 +34,43 @@ bool EcocropModel::removeParameter(std::string name) {
 	int m = match(parameter_names, name);
 	if (m > -1) {
 		parameters.erase(parameters.begin()+m);
+		parameter_names.erase(parameter_names.begin()+m);
+		if (parameters.size() == 0) vsize = 0;
 		return true;
 	}
 	return false;
+	
 };
 		
-void EcocropModel::setPredictor(std::string name, std::vector<double> p) {
+void EcocropModel::setPredictor(std::string name, std::vector<double> p, bool is_dynamic) {
 	// check length of predictor. Should be 1 or nsteps (12 for now).
-	int m = match(predictor_names, name);
-	if (m > -1) {
-		predictors[m] = p;
+	size_t np = p.size();
+	if (is_dynamic) {
+		if (!( (np > 0) & ((np % nsteps) == 0))) {
+			hasError = true;
+			std::string txt = "length of " + name + " should be divisible by " + std::to_string(nsteps);
+			messages.push_back(txt);				
+		}
+	} 
+	if (vsize == 0) {
+		vsize = is_dynamic ? np / nsteps : np;
+	} 
+	
+	size_t vvsize = is_dynamic ? vsize * nsteps : vsize;
+	if (vvsize != np) {
+		hasError = true;
+		std::string txt = "length of " + name + " should be " + std::to_string(np);
+		messages.push_back(txt);
 	} else {
-		predictor_names.push_back(name);
-		predictors.push_back(p);
+		int m = match(predictor_names, name);
+		if (m > -1) {
+			predictors[m] = p;
+			dynamic[m] = is_dynamic;
+		} else {
+			predictor_names.push_back(name);
+			predictors.push_back(p);
+			dynamic.push_back(is_dynamic);
+		}
 	}
 };
 
@@ -55,6 +79,8 @@ bool EcocropModel::removePredictor(std::string name) {
 	int m = match(predictor_names, name);
 	if (m > -1) {
 		predictors.erase(predictors.begin()+m);
+		predictor_names.erase(predictor_names.begin()+m);
+		dynamic.erase(dynamic.begin()+m);
 		return true;
 	}
 	return false;
@@ -76,44 +102,84 @@ double approx4(const std::vector<double> &v, const double &x) {
 }	
 
 
-bool predict(std::vector<double> &output, const std::vector<double> &pred, const std::vector<double> &pars) {
-	if (pred.size() == 12) {
-		std::vector<double> result(12);
-		for (size_t i=0; i<12; i++) {
-			output[i] = std::min(output[i], approx4(pars, pred[i]));
-		}
-	} else {
-		double app = approx4(pars, pred[0]);
-		for (size_t i=0; i<12; i++) {
-			output[i] = std::min(output[i], app);
+template <typename T>
+void movingmin_circular(std::vector<T>& v, int &window) {
+	unsigned nmax = v.size();
+	// window must be < nmax
+	v.insert(v.end(), v.begin(), v.end());
+	for (size_t i=0; i<nmax; i++) {
+		for (size_t j=i; j<(i+window); j++) {
+			v[i] = v[i] < v[j] ? v[i] : v[j];
 		}
 	}
-	return true;
+	v.erase(v.begin()+nmax, v.end());
+}
+
+void EcocropModel::predict_dynamic(const size_t pari, const std::vector<double>& preds, std::vector<double> &x) {
+	if (std::isnan(preds[0])) return;
+	for (size_t i=0; i<nsteps; i++) {
+		x[i] = std::min(x[i], approx4(parameters[pari], preds[i]));
+	}
+}
+
+void EcocropModel::predict_static(const size_t pari, const double& pred, std::vector<double> &x) {
+	if (std::isnan(pred)) return;
+	double app = approx4(parameters[pari], pred);
+	for (size_t i=0; i<nsteps; i++) {
+		x[i] = std::min(x[i], app);
+	}
 }
 
 
 void EcocropModel::run() {
-	out = std::vector<double>(12, 1);	
+
+	out = std::vector<double>(0);	
 	messages.resize(0);
-	hasError = false;
-	if (duration < 0) {
-		std::string txt = "duration must be >= 0"; 
+	//hasError = false;
+	if (hasError) return;
+	
+	if (duration < 0 || duration > int(nsteps)) {
+		std::string txt = "duration must be between 1 and " + std::to_string(nsteps);; 
 		messages.push_back(txt);
 		hasError = true;
 		return;
 	}
-	for (size_t i=0; i<predictors.size() ; i++) {
-		int m = match(parameter_names, predictor_names[i]); 
+	
+	std::vector<size_t> p(predictors.size());
+	for (size_t j=0; j<predictors.size() ; j++) {
+		int m = match(parameter_names, predictor_names[j]); 
 		if (m == -1) {
-			for (double &d  : out ) d = NAN; 
-			std::string txt = "no parameters for " + predictor_names[i]; 
+			std::string txt = "no parameters for " + predictor_names[j]; 
 			messages.push_back(txt);
 			hasError = true;
-			break;
+			return;
 		} else {
-			predict(out, predictors[i], parameters[m]);
-		}		
-	}	
+			p[j] = m;
+		}
+	}
+
+	size_t n = max ? vsize : vsize * nsteps;
+	out.reserve(n);
+	for (size_t i=0; i<vsize; i++) {
+		std::vector<double> x(nsteps, 1);
+		size_t dstart = i * nsteps;
+		size_t dend = dstart + nsteps;
+		for (size_t j=0; j<predictors.size() ; j++) {
+			if (dynamic[j]) {
+				std::vector<double> preds(predictors[j].begin()+dstart, predictors[j].end()+dend);
+				predict_dynamic(p[j], preds, x);
+			} else {
+				double pred = predictors[j][i];				
+				predict_static(p[j], pred, x);
+			}
+		}
+		movingmin_circular(x, duration); 
+		if (max) {
+			double maxv = *max_element(x.begin(), x.end());
+			x = std::vector<double> { maxv };
+		}
+		out.insert(out.end(), x.begin(), x.end());
+	}
 }
 
 	
