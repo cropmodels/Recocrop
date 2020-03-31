@@ -39,13 +39,13 @@ m <- ecocrop(potato)
 
 # Predictors 
 library(terra)
-f <- system.file("ex/tmin.tif", package="ecocrop")
-tn <- rast(f)
+f <- system.file("ex/tavg.tif", package="ecocrop")
+ta <- rast(f)
 f <- system.file("ex/prec.tif", package="ecocrop")
 pr <- rast(f)
 
 # match the names 
-x <- run(m, tmin=tn, prec=pr)
+x <- runSpatial(m, tavg=ta, prec=pr)
 
 plot(x)
 }
