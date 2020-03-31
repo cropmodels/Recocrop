@@ -34,8 +34,8 @@ SpatRaster
 
 \examples{
 # make ecocrop model
-potato <- ecocropPars("potato")
-m <- ecocrop(potato)
+crop <- ecocropPars("Pearl millet")
+m <- ecocrop(crop)
 
 # Predictors 
 library(terra)
@@ -44,8 +44,13 @@ ta <- rast(f)
 f <- system.file("ex/prec.tif", package="ecocrop")
 pr <- rast(f)
 
+options(m) <- list(max=TRUE)
 # match the names 
 x <- runSpatial(m, tavg=ta, prec=pr)
-
 plot(x)
+
+options(m) <- list(max=FALSE)
+# match the names 
+xx <- runSpatial(m, tavg=ta, prec=pr)
+plot(xx[[7:8]])
 }

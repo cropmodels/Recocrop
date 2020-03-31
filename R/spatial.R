@@ -53,9 +53,13 @@ function(x, ..., filename="", overwrite=FALSE, wopt=list())  {
 		}
 		
 		eco <- run(x)
+		removePredictor(x, "ALL")
+		if (nlyr(out) > 1) {
+			eco <- as.vector(matrix(eco, ncol=nlyr(out), byrow=TRUE))
+		}
 		terra::writeValues(out, eco, c(b$row[i], b$nrows[i]))
 	}
-	terra::readStop(x)
+	lapply(preds, terra::readStop)
 	out <- terra::writeStop(out)
 	return(out)
 }
