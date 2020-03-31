@@ -2,6 +2,7 @@
 
 \alias{Rcpp_EcocropModel-class}
 \alias{show,Rcpp_EcocropModel-method}
+\alias{plot,Rcpp_EcocropModel,ANY-method}
 
 \alias{ecocrop}
 \alias{ecocrop,Rcpp_EcocropModel-method}
@@ -50,7 +51,7 @@ run(x, ...)
 
  \code{predictors}: matrix with enviromental predictor variables. Each column represents an environmental variable, and must have a name that matches a predictor variable. For \code{dynamicPredictors}, the matrix must have 12 rows, or a multiple of 12 rows. For \code{staticPredictors}, the matrix can have any number of rows. The number of rows in \code{staticPredictors} must be 1/12 of the number of rows in the \code{dynamicPredictors}. 
  
- Parameters and predictors can be added sequentially; but the length of the predictor variables must match previously supplied data. If the parameter or predictor name already exists, the old values are overwritten. You can include any variable of interest, as long as you have matching names for parameters and predictor variables. You can also \code{\link{remove}} variables or parameters.
+ Parameters and predictors can be added sequentially; but the length of the predictor variables must match previously supplied data. If the parameter or predictor name already exists, the old values are overwritten. You can include any variable of interest, as long as you have matching names for parameters and predictor variables. You can also \code{\link{removeParameters}} or variables.
  
  
  \code{options}: named list with options (to be described)
@@ -77,10 +78,14 @@ m <- ecocrop(potato)
 # add parameters
 parameters(m) <- cbind(clay=c(0,0,10,20))
 
+# inspect 
+plot(m)
+
 # add predictors
 dp <- cbind(tavg=c(10,12,14,16,18,20,22,20,18,16,14,12), prec=seq(50,182,12))
 dp
 dynamicPredictors(m) <- dp
+
 staticPredictors(m) <- cbind(clay=12)
 
 # run model

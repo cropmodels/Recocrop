@@ -35,15 +35,16 @@ bool EcocropModel::removeParameter(std::string name) {
 	if (m > -1) {
 		parameters.erase(parameters.begin()+m);
 		parameter_names.erase(parameter_names.begin()+m);
-		if (parameters.size() == 0) vsize = 0;
+		return true;
+	} else if (name == "ALL") {
+		parameters.resize(0);
+		parameter_names.resize(0);
 		return true;
 	}
 	return false;
-	
 };
 		
 void EcocropModel::setPredictor(std::string name, std::vector<double> p, bool is_dynamic) {
-	// check length of predictor. Should be 1 or nsteps (12 for now).
 	size_t np = p.size();
 	if (is_dynamic) {
 		if (!( (np > 0) & ((np % nsteps) == 0))) {
@@ -59,7 +60,7 @@ void EcocropModel::setPredictor(std::string name, std::vector<double> p, bool is
 	size_t vvsize = is_dynamic ? vsize * nsteps : vsize;
 	if (vvsize != np) {
 		hasError = true;
-		std::string txt = "length of " + name + " should be " + std::to_string(np);
+		std::string txt = "length of " + name + " should be " + std::to_string(vvsize);
 		messages.push_back(txt);
 	} else {
 		int m = match(predictor_names, name);
@@ -81,6 +82,13 @@ bool EcocropModel::removePredictor(std::string name) {
 		predictors.erase(predictors.begin()+m);
 		predictor_names.erase(predictor_names.begin()+m);
 		dynamic.erase(dynamic.begin()+m);
+		if (predictors.size() == 0) vsize = 0;
+		return true;
+	} else if (name == "ALL") {
+		predictors.resize(0);
+		predictor_names.resize(0);
+		dynamic.resize(0);
+		vsize = 0;
 		return true;
 	}
 	return false;
@@ -116,17 +124,29 @@ void movingmin_circular(std::vector<T>& v, int &window) {
 }
 
 void EcocropModel::predict_dynamic(const size_t pari, const std::vector<double>& preds, std::vector<double> &x) {
-	if (std::isnan(preds[0])) return;
 	for (size_t i=0; i<nsteps; i++) {
-		x[i] = std::min(x[i], approx4(parameters[pari], preds[i]));
+		if (std::isnan(preds[i])) {
+			for (size_t i=0; i<nsteps; i++) {
+				x[i] = NAN;
+			}
+			return;
+		} else {
+			x[i] = std::min(x[i], approx4(parameters[pari], preds[i]));
+		}
 	}
 }
 
 void EcocropModel::predict_static(const size_t pari, const double& pred, std::vector<double> &x) {
-	if (std::isnan(pred)) return;
-	double app = approx4(parameters[pari], pred);
-	for (size_t i=0; i<nsteps; i++) {
-		x[i] = std::min(x[i], app);
+	if (std::isnan(pred)) {
+		for (size_t i=0; i<nsteps; i++) {
+			x[i] = NAN;
+		}
+		return;
+	} else {
+		double app = approx4(parameters[pari], pred);
+		for (size_t i=0; i<nsteps; i++) {
+			x[i] = std::min(x[i], app);
+		}
 	}
 }
 

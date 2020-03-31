@@ -46,7 +46,7 @@ ecocropPars <- function(name, ...) {
 		f <- d[i,]
 		x <- as.list(f[1:3])
 		x$duration <- floor((f$GMIN + f$GMAX) / 61)
-		x$ktmp <- c(-Inf, f$KTMP-1, f$KTMP+1, Inf)
+		x$ktmp <- c(f$KTMP-1, f$KTMP+1, Inf, Inf)
 		x$tavg <- c(f$TMIN, f$TOPMN, f$TOPMX, f$TMAX)
 		
 		prec <- c(f$RMIN, f$ROPMN, f$ROPMX, f$RMAX)

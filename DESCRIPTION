@@ -6,7 +6,7 @@ Version: 0.0-2
 Date: 2020-03-30
 LinkingTo: Rcpp
 SystemRequirements: C++11
-Imports: meteor, methods (>= 0.2-2), Rcpp (>= 0.12.4)
+Imports: meteor, terra, methods (>= 0.2-2), Rcpp (>= 0.12.4)
 Depends: R (>= 3.5.0)
 Authors@R: person("Robert J.", "Hijmans", role = c("cre", "aut"),  email = "r.hijmans@gmail.com")
 License: GPL (>=3)

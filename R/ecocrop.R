@@ -129,39 +129,41 @@ removePredictor <- function(x, name) {
 }
 
 
-
-if (!isGeneric("runSpatial")) { setGeneric("runSpatial", function(x, ...) standardGeneric("runSpatial")) }	
-
-setMethod("runSpatial", signature("Rcpp_EcocropModel"), 
-	function(x, dvars, svars, ...) {
-		hasDvars <- !missing(dvars)
-		hasSvars <- !missing(svars)
-		if (!hasDvars & !hasSvars) stop("no variables supplied")
-		
-		if (hasDvars) {
-			nms <- colnames(dvars)
-			for (i in 1:ncol(dvars)) {
-				x$setPredictor(nms[i], dvars[,i], TRUE)
-			}
-		}
-		if (hasSvars) {
-			nms <- colnames(svars)
-			for (i in 1:ncol(svars)) {
-				x$setPredictor(nms[i], svars[,i], FALSE)
-			}
-		}
-	#	x$runbatch()
-		if (x$hasError) {
-			stop(paste(x$messages, collapse="\n"))
-		}
-		x$out
-	}
-)
-
-
-
 setMethod ("show" , "Rcpp_EcocropModel", 
 	function(object) {
 		utils::str(object)
 	}
 )	
+
+
+setMethod ("plot" , "Rcpp_EcocropModel", 
+	function(x, ...) {
+		pars <- x$parameters
+		nms <- x$parameter_names
+		n <- length(pars)
+		nc <- ceiling(sqrt(n))
+		nr <- ceiling(n / nc)
+
+		old.par <- graphics::par(no.readonly = TRUE) 
+		on.exit(graphics::par(old.par))
+		graphics::par(mfrow=c(nr, nc), mar=c(2, 3, 2, 1))
+
+		for (i in 1:n) {
+			p <- pars[[i]]
+			if (!is.finite(p[2])) {
+				p[1] <- p[2] <- p[3] - 2*(p[4]-p[3])
+			} else if (!is.finite(p[3])) {
+				p[4] <- p[3] <- p[2] + 2*(p[2]-p[1])
+			}
+			d <- (p[4] - p[1]) / 4
+			p <- c(p[1]-d, p, p[4]+d)
+			xy <- cbind(p, c(0,0,1,1,0,0))
+			plot(xy, ylab="suitability", las=1, type="l", lwd=2, col="red", axes=FALSE)
+			points(xy[2:5,])
+			graphics::axis(1, pos=-0.05)
+			graphics::axis(2, las=2)
+			graphics::title(nms[i])
+		}
+	}
+)	
+

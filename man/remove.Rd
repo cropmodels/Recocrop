@@ -1,4 +1,4 @@
-\name{remove}
+\name{removeParameters}
 
 \alias{removeParameters}
 \alias{removePredictor}
@@ -18,11 +18,11 @@ removePredictor(x, name)
 
 \arguments{
 \item{x}{EcocropModel object}
-\item{name}{character. name of the variable}
+\item{name}{character. name of the variable to remove; or "ALL" to remove all parameters or predictors.}
 }
 
 \value{
-EcocropModel
+EcocropModel (invisibly)
 }
 
 
