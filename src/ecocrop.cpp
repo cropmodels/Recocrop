@@ -167,7 +167,7 @@ void EcocropModel::run() {
 		return;
 	}
 	
-	std::vector<size_t> p(predictors.size());
+	std::vector<unsigned> p(predictors.size());
 	for (size_t j=0; j<predictors.size() ; j++) {
 		int m = match(parameter_names, predictor_names[j]); 
 		if (m == -1) {
@@ -180,7 +180,7 @@ void EcocropModel::run() {
 		}
 	}
 
-	size_t n = max ? vsize : vsize * nsteps;
+	unsigned n = max ? vsize : vsize * nsteps;
 	out.reserve(n);
 	for (size_t i=0; i<vsize; i++) {
 		std::vector<double> x(nsteps, 1);
@@ -188,7 +188,7 @@ void EcocropModel::run() {
 		size_t dend = dstart + nsteps;
 		for (size_t j=0; j<predictors.size() ; j++) {
 			if (dynamic[j]) {
-				std::vector<double> preds(predictors[j].begin()+dstart, predictors[j].end()+dend);
+				std::vector<double> preds(predictors[j].begin()+dstart, predictors[j].begin()+dend);
 				predict_dynamic(p[j], preds, x);
 			} else {
 				double pred = predictors[j][i];				
