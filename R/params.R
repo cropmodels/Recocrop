@@ -32,7 +32,8 @@ ecocropPars <- function(name, ...) {
 	if (length(i)==0) {
 		a1 <- agrep(nam, d1)
 		a2 <- agrep(nam, d2)
-		a <- c(a1, a2)
+		a3 <- agrep(nam, d3)
+		a <- unique(c(a1, a2, a3))
 		cat(paste0('"', name, '" not found. \n'))
 		if (length(a) > 0) {
 			cat("Did you mean one of these?\n")
@@ -45,13 +46,15 @@ ecocropPars <- function(name, ...) {
 	if (length(i)==1) {
 		f <- d[i,]
 		x <- as.list(f[1:3])
-		x$duration <- floor((f$GMIN + f$GMAX) / 61)
+		G <- f$GMIN + min(30, f$GMAX - f$GMIN)
+		x$duration <- round(G / 30)
+	
 		x$ktmp <- c(f$KTMP-1, f$KTMP+1, Inf, Inf)
 		x$tavg <- c(f$TMIN, f$TOPMN, f$TOPMX, f$TMAX)
 		
 		prec <- c(f$RMIN, f$ROPMN, f$ROPMX, f$RMAX)
 		x$prec <- prec / min(12, x$duration + 1)
-		x$ph <-  c(f$PHMIN, f$PHOPMN, f$PHOPMX, f$PHMAX)
+		x$ph <- c(f$PHMIN, f$PHOPMN, f$PHOPMX, f$PHMAX)
 		return(x)
 	}
 }

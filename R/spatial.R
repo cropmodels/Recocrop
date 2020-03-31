@@ -31,7 +31,7 @@ function(x, ..., filename="", overwrite=FALSE, wopt=list())  {
 	nc <- ncol(out)
 	lapply(preds, terra::readStart)
 	
-	b <- terra::writeStart(out, filename, overwrite, wopt=list(memfrac=0.1))
+	b <- terra::writeStart(out, filename, overwrite, wopt)
 	for (i in 1:b$n) {
 		removePredictor(x, "ALL")
 		
