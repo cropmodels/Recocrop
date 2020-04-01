@@ -46,7 +46,7 @@ ecocropPars <- function(name, ...) {
 	if (length(i)==1) {
 		f <- d[i,]
 		x <- as.list(f[1:3])
-		G <- f$GMIN + min(30, f$GMAX - f$GMIN)
+		G <- f$GMIN + min(30, f$GMAX - f$GMIN, na.rm=TRUE)
 		x$duration <- round(G / 30)
 	
 		x$ktmp <- c(f$KTMP-1, f$KTMP+1, Inf, Inf)

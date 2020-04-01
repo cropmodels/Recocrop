@@ -8,7 +8,7 @@ Add or remove parameters and predictors
 }
 
 \description{
-Add parameters or predictors to an EcoCrop model, or remove them
+Remove parameters or predictors from an EcoCrop model
 }
 
 \usage{
@@ -22,13 +22,13 @@ removePredictor(x, name)
 }
 
 \value{
-EcocropModel (invisibly)
+Nothing is returned
 }
 
 
 \examples{
-potato <- ecocropPars("potato")
-m <- ecocrop(potato)
+pot <- ecocropPars("potato")
+m <- ecocrop(pot)
 
 parameters(m) <- cbind(clay = c(0, 10, 30, 40))
 removeParameters(m, "ph")

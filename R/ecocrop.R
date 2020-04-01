@@ -1,4 +1,5 @@
 
+
 if (!isGeneric("run")) { setGeneric("run", function(x, ...) standardGeneric("run")) }	
 
 if (!isGeneric("dynamicPredictors<-")) { setGeneric("dynamicPredictors<-", function(x, value) standardGeneric("dynamicPredictors<-")) }	
@@ -59,7 +60,6 @@ setMethod("run", signature("Rcpp_EcocropModel"),
 
 removeParameters <- function(x, name) {
 	x$removeParameter(name)
-	invisible(x)
 }
 
 
@@ -125,7 +125,6 @@ setMethod("staticPredictors<-", signature("Rcpp_EcocropModel", "matrix"),
 
 removePredictor <- function(x, name) {
 	x$removePredictor(name)
-	invisible(x)
 }
 
 

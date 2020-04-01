@@ -9,6 +9,8 @@
 }
 
 \description{
-Ecocrop model
+
+EcoCrop is a simple limiting-factor based model of plant adaptation to environmental conditions. 
+
 }
 
