@@ -27,7 +27,12 @@ function(x, ..., filename="", overwrite=FALSE, wopt=list())  {
 	spreds <- preds[!di]
 		
 	out <- rast(preds[[1]])
-	nlyr(out) <- ifelse(x$max, 1, 12)
+	nms <- x$names()
+	nlyr(out) <- length(nms)
+	if (length(wopt$names) != length(nms)) {
+		names(out) <- nms
+		wopt$names <- NULL
+	}
 	nc <- ncol(out)
 	lapply(preds, terra::readStart)
 	
@@ -65,4 +70,4 @@ function(x, ..., filename="", overwrite=FALSE, wopt=list())  {
 }
 )
 
-
+# SpatRaster::setCategories(unsigned layer, std::vector<std::string> labs, std::vector<double> levs

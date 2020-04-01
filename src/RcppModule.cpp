@@ -15,9 +15,16 @@ RCPP_MODULE(ECOCROP){
 		.method("removeParameter", &EcocropModel::removeParameter, "removeParameter")
 		.method("removePredictor", &EcocropModel::removePredictor, "removePredictor")
 		.method("run", &EcocropModel::run, "run") 
+		.method("names", &EcocropModel::names, "names of output variables") 
+		.method("setOptions",  &EcocropModel::setOptions, "set output options") 
+		
 //		.method("runbatch", &EcocropModel::runbatch, "run the model")	
-		.field("duration", &EcocropModel::duration, "duration")
-		.field("max", &EcocropModel::max, "max")
+		.field("duration",  &EcocropModel::duration, "duration")
+		.field("get_max",   &EcocropModel::get_max, "get_max")
+		.field("which_max", &EcocropModel::which_max, "which_max")
+		.field("count_max", &EcocropModel::count_max, "count_max")
+		.field("lim_fact",  &EcocropModel::lim_fact, "lim_fact")
+				
 		.field_readonly("parameters", &EcocropModel::parameters, "parameters")
 		.field_readonly("parameter_names", &EcocropModel::parameter_names, "parameter_names")
 		.field_readonly("predictors", &EcocropModel::predictors, "predictors")
@@ -27,3 +34,4 @@ RCPP_MODULE(ECOCROP){
 		.field("messages", &EcocropModel::messages, "messages")
 	;			
 }
+

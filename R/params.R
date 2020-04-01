@@ -45,19 +45,25 @@ ecocropPars <- function(name, ...) {
 	
 	if (length(i)==1) {
 		f <- d[i,]
-		x <- as.list(f[1:3])
+		nms <- paste(f[1], "; ", f[3], paste0(" (", f[2], ")"), sep="") 
+		
 		G <- f$GMIN + min(30, f$GMAX - f$GMIN, na.rm=TRUE)
-		x$duration <- round(G / 30)
+		
+		duration <- round(G / 30)
 	
-		x$ktmp <- c(f$KTMP-1, f$KTMP+1, Inf, Inf)
-		x$tavg <- c(f$TMIN, f$TOPMN, f$TOPMX, f$TMAX)
+		ktmp <- c(f$KTMP-1, f$KTMP+1, Inf, Inf)
+		tavg <- c(f$TMIN, f$TOPMN, f$TOPMX, f$TMAX)
 		
 		prec <- c(f$RMIN, f$ROPMN, f$ROPMX, f$RMAX)
-		x$prec <- prec / min(12, x$duration + 1)
-		x$ph <- c(f$PHMIN, f$PHOPMN, f$PHOPMX, f$PHMAX)
-		return(x)
+		prec <- prec / min(12, duration + 1)
+		ph <- c(f$PHMIN, f$PHOPMN, f$PHOPMX, f$PHMAX)
+		
+		list(
+			name=nms, 
+			parameters=cbind(duration=c(duration, NA, f$GMIN, f$GMAX), ktmp=ktmp, tavg=tavg, prec=prec, ph=ph)
+		)
 	}
 }
 
 
-#str(ecocropParas("potato"))
+#ecocropPars("potato")

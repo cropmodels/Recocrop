@@ -1,12 +1,14 @@
 
-
 if (!isGeneric("run")) { setGeneric("run", function(x, ...) standardGeneric("run")) }	
 
 if (!isGeneric("dynamicPredictors<-")) { setGeneric("dynamicPredictors<-", function(x, value) standardGeneric("dynamicPredictors<-")) }	
 if (!isGeneric("staticPredictors<-")) { setGeneric("staticPredictors<-", function(x, value) standardGeneric("staticPredictors<-")) }	
 
+#if (!isGeneric("crop<-")) { setGeneric("crop<-", function(x, value) standardGeneric("crop<-")) }	
 if (!isGeneric("parameters<-")) { setGeneric("parameters<-", function(x, value) standardGeneric("parameters<-")) }	
-if (!isGeneric("options<-")) { setGeneric("options<-", function(x, value) standardGeneric("options<-")) }	
+#if (!isGeneric("options<-")) { setGeneric("options<-", function(x, value) standardGeneric("options<-")) }	
+
+if (!isGeneric("control")) { setGeneric("control", function(x, ...) standardGeneric("control")) }	
 
 
 .hasError <- function(x, method) {
@@ -21,34 +23,15 @@ if (!isGeneric("options<-")) { setGeneric("options<-", function(x, value) standa
 
 ecocrop <- function(crop) {
 	m <- EcocropModel$new()
-	if (missing(crop)) return(m)
-	if (!is.list(crop)) stop('argument "crop" must be a list')
-	duration <- FALSE
-	
-	if (!is.null(crop$duration)) {
-		m$duration <- crop$duration
-		duration <- TRUE
-	}
-	
-	i <- (sapply(crop, length) == 4)
-	
-	if (length(i) == 0) {
-		if (duration) { 
-			return (m)
-		} else {
-			stop("no parameters found")
+	if (!missing(crop)) {
+		if (is.list(crop)) {
+			crop <- crop$parameters
 		}
+		parameters(m) <- crop
 	}
-	crop <- crop[i]
-	i <- sapply(crop, is.numeric)
-	
-	if (length(i) == 0) stop("no numeric parameters found")
-	crop <- crop[i]
-	nms <- trimws(names(crop))
-	if (any(nms == "")) stop("all elements must be named")
-	for (i in 1:length(crop)) m$setParameter(nms[i], unlist(crop[i])) 
 	m
 }
+
 
 setMethod("run", signature("Rcpp_EcocropModel"), 
 	function(x, ...) {
@@ -63,23 +46,41 @@ removeParameters <- function(x, name) {
 }
 
 
-setMethod("options<-", signature("Rcpp_EcocropModel", "list"), 
-	function(x, value) {
-		nms <- tolower(trimws(names(value)))
-		i <- match(c("max"), nms)
-		if (length(i) > 0) {
-			value <- value[i]
-			nms <- nms[i]
-			for (i in 1:length(nms)) {
-				if (isTRUE(nms[i] == "max")) x$max <- value[[i]]
+# setMethod("options<-", signature("Rcpp_EcocropModel", "list"), 
+	# function(x, value) {
+		# nms <- tolower(trimws(names(value)))
+		# i <- match(c("get_max", "which_max", "count_max", "lim_fact"), nms)
+		# if (length(i) > 0) {
+			# value <- value[i]
+			# nms <- nms[i]
+			# for (i in 1:length(nms)) {
+				# if (isTRUE(nms[i] == "get_max")) { x$get_max <- value[[i]]
+				# } else if (isTRUE(nms[i] == "which_max")) { x$which_max <- value[[i]]
+				# } else if (isTRUE(nms[i] == "count_max")){ x$count_max <- value[[i]]
+				# } else if (isTRUE(nms[i] == "lim_fact")){ x$lim_fact <- value[[i]] }
+			# }
+		# } else {
+			# warning("no valid option names found")
+		# }
+		# x
+	# }
+# )
+
+
+setMethod("control", signature("Rcpp_EcocropModel"), 
+	function(x, get_max=FALSE, which_max=FALSE, count_max=FALSE, lim_fact=FALSE, ...) {
+		if (lim_fact) {
+			if (any(c(get_max, which_max, count_max))) {
+				warning("if lim_fact=TRUE the *_max options are considered to be FALSE")
+				x$lim_fact = TRUE
 			}
-		} else {
-			warning("no valid option names found")
 		}
+		x$which_max <- which_max
+		x$get_max <- get_max
+		x$count_max <- count_max
 		x
 	}
 )
-
 
 
 setMethod("parameters<-", signature("Rcpp_EcocropModel", "matrix"), 
@@ -88,7 +89,11 @@ setMethod("parameters<-", signature("Rcpp_EcocropModel", "matrix"),
 		nms <- colnames(value)
 		if (any(nms=="")) stop("all columns must have names")
 		for (i in 1:ncol(value)) {
-			x$setParameter(nms[i], value[,i])
+			if (nms[i] == "duration") {
+				x$duration <- value[1,i]
+			} else {
+				x$setParameter(nms[i], value[,i])
+			}
 			.hasError(x, "parameters")
 		}
 		x

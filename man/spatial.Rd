@@ -34,7 +34,6 @@ SpatRaster
 
 \examples{
 
-
 ## Predictors 
 library(terra)
 fta <- system.file("ex/ta.tif", package="ecocrop")
@@ -57,26 +56,31 @@ plot(preds)
 ## make ecocrop model
 crop <- ecocropPars("maize")
 m <- ecocrop(crop)
-options(m) <- list(max=TRUE)
+control(m, get_max=TRUE)
 
 # run the model, make sure to match 
 # the predictor and parameter names 
 mz <- runSpatial(m, tavg=ta, prec=pr, ph=ph, wopt=list(names="maize"))
 plot(mz)
 
-options(m) <- list(max=FALSE)
-# match the names 
-mz12 <- runSpatial(m, tavg=ta, prec=pr, ph=ph, wopt=list(names=month.abb))
+control(m, get_max=FALSE)
+mz12 <- runSpatial(m, tavg=ta, prec=pr, ph=ph)
 plot(mz12[[7:8]])
+
+control(m, lim_fact=TRUE)
+mzlim <- runSpatial(m, tavg=ta, prec=pr+50, ph=ph)
+plot(mzlim[[7]])
+
+control(m, lim_fact=FALSE)
 
 # make the soil more acidic
 ph2 <- ph - 1.25 
-options(m) <- list(max=TRUE)
+control(m, get_max=TRUE)
 mzph <- runSpatial(m, tavg=ta, prec=pr, ph=ph2)
 plot(mzph)
 
 # more rainfall
-options(m) <- list(max=TRUE)
+control(m, get_max=TRUE)
 pr2 <- pr + 30 # for each month
 mzpr <- runSpatial(m, tavg=ta, prec=pr2, ph=ph)
 plot(mzpr)
@@ -88,11 +92,10 @@ plot(s)
 ## another crop
 crop <- ecocropPars("pearl millet")
 m <- ecocrop(crop)
-options(m) <- list(max=TRUE)
+control(m, get_max=TRUE)
 pm <- runSpatial(m, prec=pr, tavg=ta, wopt=list(names="Pearl millet"))
 
 crops <- c(mz, pm)
 plot(crops)
-
 }
 

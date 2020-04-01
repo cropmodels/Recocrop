@@ -97,6 +97,31 @@ bool EcocropModel::removePredictor(std::string name) {
 };
 
 
+
+void EcocropModel::setOptions(bool _get_max, bool _which_max, bool _count_max, bool _lim_fact) {
+	get_max   = _get_max;
+	which_max = _which_max;
+	count_max = _count_max;
+	lim_fact  = _lim_fact;
+}
+
+
+
+std::vector<std::string> EcocropModel::names(){
+	std::vector<std::string> s;
+	unsigned ns = (count_max + get_max + which_max);
+	if (lim_fact) {
+		s = {"m_jan", "m_feb", "m_mar", "m_apr", "m_may", "m_jun", "m_jul", "m_aug", "m_sep", "m_oct", "m_nov", "m_dec"};
+	} else if (ns > 0) {
+		if (get_max)   s.push_back("get_max");
+		if (count_max) s.push_back("count_max");
+		if (which_max) s.push_back("which_max");
+	} else {
+		s = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
+	}
+	return s;
+}
+
 double approx4(const std::vector<double> &v, const double &x) {
 	double result;
 	if (x < v[0] || x > v[3]) {
@@ -125,31 +150,52 @@ void movingmin_circular(std::vector<T>& v, int &window) {
 	v.erase(v.begin()+nmax, v.end());
 }
 
-void EcocropModel::predict_dynamic(const size_t pari, const std::vector<double>& preds, std::vector<double> &x) {
+bool EcocropModel::predict_dynamic(const size_t pari, const std::vector<double>& preds, std::vector<double> &x, std::vector<double> &mf) {
 	for (size_t i=0; i<nsteps; i++) {
 		if (std::isnan(preds[i])) {
 			for (size_t i=0; i<nsteps; i++) {
 				x[i] = NAN;
 			}
-			return;
+			return false;
 		} else {
-			x[i] = std::min(x[i], approx4(parameters[pari], preds[i]));
+			for (size_t i=0; i<nsteps; i++) {
+				double app = approx4(parameters[pari], preds[i]);
+				if (lim_fact) {
+					if (app < x[i]) {
+						x[i] = app;
+						mf[i] = pari+1;
+					}
+				} else {
+					x[i] = std::min(x[i], app);
+				}
+			}
 		}
 	}
+	return true;
 }
 
-void EcocropModel::predict_static(const size_t pari, const double& pred, std::vector<double> &x) {
+bool EcocropModel::predict_static(const size_t pari, const double& pred, std::vector<double> &x, std::vector<double> &mf) {
 	if (std::isnan(pred)) {
 		for (size_t i=0; i<nsteps; i++) {
 			x[i] = NAN;
 		}
-		return;
+		return false;
 	} else {
 		double app = approx4(parameters[pari], pred);
-		for (size_t i=0; i<nsteps; i++) {
-			x[i] = std::min(x[i], app);
+		if (lim_fact) {
+			for (size_t i=0; i<nsteps; i++) {
+				if (app < x[i]) {
+					x[i] = app;
+					mf[i] = pari+1;
+				}
+			}			
+		} else {
+			for (size_t i=0; i<nsteps; i++) {
+				x[i] = std::min(x[i], app);
+			}
 		}
 	}
+	return true;	
 }
 
 
@@ -180,27 +226,72 @@ void EcocropModel::run() {
 		}
 	}
 
-	unsigned n = max ? vsize : vsize * nsteps;
+	size_t nsummary = 0;
+	bool summary = false;
+	if (!lim_fact) {
+		nsummary = count_max + get_max + which_max;
+		summary = nsummary > 0;
+	} 
+	
+	std::vector<double> sumnan(nsummary, NAN);
+	unsigned n = (nsummary > 0) ? (nsummary * vsize) : (nsteps * vsize);
 	out.reserve(n);
+
+	bool success = true;
+	std::vector<double> x(nsteps, 1);
+	std::vector<double> mf(nsteps, 0);
+
 	for (size_t i=0; i<vsize; i++) {
-		std::vector<double> x(nsteps, 1);
+		
+		std::fill(x.begin(), x.end(), 1);
+		if (lim_fact) {
+			std::fill(mf.begin(), mf.end(), 0);
+		}
+		
 		size_t dstart = i * nsteps;
 		size_t dend = dstart + nsteps;
 		for (size_t j=0; j<predictors.size() ; j++) {
 			if (dynamic[j]) {
 				std::vector<double> preds(predictors[j].begin()+dstart, predictors[j].begin()+dend);
-				predict_dynamic(p[j], preds, x);
+				success = predict_dynamic(p[j], preds, x, mf);
 			} else {
 				double pred = predictors[j][i];				
-				predict_static(p[j], pred, x);
+				success = predict_static(p[j], pred, x, mf);
 			}
+			if (!success) break;
 		}
-		movingmin_circular(x, duration); 
-		if (max) {
-			double maxv = *max_element(x.begin(), x.end());
-			x = std::vector<double> { maxv };
+		
+		if (success) {
+			if (lim_fact) {	
+				out.insert(out.end(), mf.begin(), mf.end());
+			} else {
+				movingmin_circular(x, duration); 
+				if (summary) {
+					std::vector<double>::iterator it = std::max_element(x.begin(), x.end());
+					if (get_max) {
+						double maxv = *it;
+						out.push_back(maxv);
+					}
+					if (which_max) {
+						double wmax = std::distance(x.begin(), it);
+						out.push_back(wmax);
+					}
+					if (count_max) {
+						double maxv = *it;
+						double mcount = std::count(x.begin(), x.end(), maxv);
+						out.push_back(mcount);
+					}
+				} else {
+					out.insert(out.end(), x.begin(), x.end());
+				}
+			}
+		} else { // NA
+			if (summary) {
+				out.insert(out.end(), sumnan.begin(), sumnan.end());
+			} else {
+				out.insert(out.end(), x.begin(), x.end()); // NA - same for lim_fact
+			} 
 		}
-		out.insert(out.end(), x.begin(), x.end());
 	}
 }
 

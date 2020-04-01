@@ -10,8 +10,8 @@
 \alias{parameters<-}
 \alias{parameters<-,Rcpp_EcocropModel,matrix-method}
 
-\alias{options<-}
-\alias{options<-,Rcpp_EcocropModel,list-method}
+\alias{control}
+\alias{control,Rcpp_EcocropModel-method}
 
 \alias{dynamicPredictors<-}
 \alias{dynamicPredictors<-,Rcpp_EcocropModel,matrix-method}
@@ -46,7 +46,7 @@ ecocrop(crop)
 parameters(x) <- value
 dynamicPredictors(x) <- value
 staticPredictors(x) <- value
-options(x) <- value 
+\S4method{control}{Rcpp_EcocropModel}(x, get_max=FALSE, which_max=FALSE, count_max=FALSE, lim_fact=FALSE, ...)
 run(x, ...)
 }
 
@@ -57,14 +57,20 @@ run(x, ...)
 
  \item{value}{
  
- \code{parameters}: matrix with parameters. Each column represents parameters for an environmental variable, and must have a name. The matrix must have four rows that form a table-mountain shaped response function (see the plot in the examples). 
+ \code{parameters} method: matrix with parameters. Each column represents parameters for an environmental variable, and must have a name. The matrix must have four rows that represent the x-coordinates for a table-mountain shaped relative response function (y-coordinates: 0,1,1,0; see the plot in the examples). The only exception is the "duration" parameter with has a single value (in the first row). For functions where only "one tail" is relevant, the values for the other tail can be set to very high or low values, including Inf and -Inf.
 
- \code{predictors}: matrix with environmental predictor variables. Each column represents an environmental variable, and must have a name that matches a predictor variable. For \code{dynamicPredictors}, the matrix must have 12 rows, or a multiple of 12 rows. For \code{staticPredictors}, the matrix can have any number of rows. The number of rows in \code{staticPredictors} must be 1/12 of the number of rows in the \code{dynamicPredictors}. 
+ \code{predictors} method: matrix with environmental predictor variables. Each column represents an environmental variable, and must have a name that matches a predictor variable. For \code{dynamicPredictors}, the matrix must have 12 rows, or a multiple of 12 rows. For \code{staticPredictors}, the matrix can have any number of rows. The number of rows in \code{staticPredictors} must be 1/12 of the number of rows in the \code{dynamicPredictors}. 
  
  Parameters and predictors can be added sequentially; but the length of the predictor variables must match previously supplied data. If the parameter or predictor name already exists, the old values are overwritten. You can include any variable of interest, as long as you have matching names for parameters and predictor variables. You can also \code{\link{removeParameters}} or variables.
-  
- \code{options}: named list with options. Thus far: \code{max}: if \code{TRUE}, the maximum value (across the 12 months of the year) is returned. Otherwise all monthly values are returned.
  }
+
+ \item{get_max}{logical. If \code{TRUE}, the maximum value (across the 12 months of the year) is returned.}
+
+ \item{which_max}{logical. If \code{TRUE}, the first month with the maximum value is returned.}
+
+ \item{count_max}{logical. If \code{TRUE}, the number of months with the maximum value is returned.}
+  
+ \item{lim_fact}{logical. If \code{TRUE}, the options above are ignored, the most-limiting factor for each month (or the one that is reached first if there are ties) is also returned.}
   
  \item{...}{additional arguments. None implemented}
 }
@@ -76,7 +82,9 @@ vector
 
 
 \details{
-The model computes a score for each variable in each month. It then takes the lowest (most limiting) score for each month. Then it takes the lowest score for each month and a number of months that follow (the growing season). This number of months is set by the \code{duration} parameter. 
+The model computes a score for each variable in each month. It then takes the lowest (most limiting) score for each month. Then it takes the lowest score for each month and a number of months that follow (the growing season). This number of months is set by the \code{duration} parameter (see \code{\link{ecocropPars}}. 
+
+You can set the output variables with \code{options}. If all options are \code{FALSE}, the 12 monthly scores are returned.
 }
 
 \examples{
@@ -103,6 +111,6 @@ staticPredictors(m) <- cbind(clay=12)
 # run model
 run(m)
 
-options(m) <- list(max=TRUE)
+control(m, get_max=TRUE)
 run(m)
 }
