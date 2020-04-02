@@ -1,7 +1,7 @@
 Package: ecocrop
-Description: The EcoCrop model estimates environmental suitability for plants using a limiting factor approach. 
 Type: Package
-Title: Environmental limiting factors model for plant adaptation
+Title: Implementation of the EcoCrop model for estimating adaptation of plants to environments
+Description: The EcoCrop model estimates environmental suitability for plants using a limiting factor approach. The current implementation is flexible; it allows for the use of any environmental predictor, both static (e.g. soil pH) and dynamic (monthly climate data).
 Version: 0.0-4
 Date: 2020-04-01
 LinkingTo: Rcpp
