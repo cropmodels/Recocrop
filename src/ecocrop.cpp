@@ -290,14 +290,14 @@ void EcocropModel::run() {
 						out.push_back(maxv);
 					}
 					if (which_max) {
-						double wmax=NAN;
+						double wmax = NAN;
 						if (maxv > 0) {
-							wmax = std::distance(x.begin(), it);
+							wmax = 1 + std::distance(x.begin(), it);
 						}
 						out.push_back(wmax);
 					}
 					if (count_max) {
-						double mcount=NAN;
+						double mcount = NAN;
 						if (maxv > 0) {
 							mcount = std::count(x.begin(), x.end(), maxv);
 						}
