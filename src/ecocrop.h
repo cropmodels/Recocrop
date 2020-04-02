@@ -1,7 +1,7 @@
 /*
-Author: Robert Hijmans
-Date: March 2020
-License: GPL (>=3)
+ Author: Robert Hijmans
+ Date: March 2020
+ License: GPL (>=2)
 */
 
 
@@ -11,8 +11,9 @@ class EcocropModel {
 		std::string name;
 		bool hasError;
 		
+		size_t nyears = 1;
 		size_t nsteps = 12;
-		int duration= -1;
+		int duration = -1;
 		bool get_max = false;
 		bool which_max = false;
 		bool count_max = false;
@@ -43,11 +44,7 @@ class EcocropModel {
 		bool removePredictor(std::string name);
 
 		void setOptions(bool _get_max, bool _which_max, bool _count_max, bool _lim_fact);
-		
-	//	std::vector<double> output() {
-	//		return std::vector<double> {data};
-	//	}
-	//	std::vector<double> runbatch(std::vector<std::vector<double>> predictors; std::vector<std::string> names);
+
 };
 
 

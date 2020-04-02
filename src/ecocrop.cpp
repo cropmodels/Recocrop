@@ -1,3 +1,20 @@
+// Copyright (c) 2020  Robert J. Hijmans
+//
+// This file is part of the "ecocrop" software.
+//
+// spat is free software: you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// spat is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// A copy of the GNU General Public License
+// is available here <http://www.gnu.org/licenses/>.
+
 #include <vector>
 #include <algorithm>
 #include <string>
@@ -113,9 +130,9 @@ std::vector<std::string> EcocropModel::names(){
 	if (lim_fact) {
 		s = {"m_jan", "m_feb", "m_mar", "m_apr", "m_may", "m_jun", "m_jul", "m_aug", "m_sep", "m_oct", "m_nov", "m_dec"};
 	} else if (ns > 0) {
-		if (get_max)   s.push_back("get_max");
-		if (count_max) s.push_back("count_max");
+		if (get_max)   s.push_back("max");
 		if (which_max) s.push_back("which_max");
+		if (count_max) s.push_back("count_max");
 	} else {
 		s = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
 	}
@@ -268,17 +285,22 @@ void EcocropModel::run() {
 				movingmin_circular(x, duration); 
 				if (summary) {
 					std::vector<double>::iterator it = std::max_element(x.begin(), x.end());
+					double maxv = *it;
 					if (get_max) {
-						double maxv = *it;
 						out.push_back(maxv);
 					}
 					if (which_max) {
-						double wmax = std::distance(x.begin(), it);
+						double wmax=NAN;
+						if (maxv > 0) {
+							wmax = std::distance(x.begin(), it);
+						}
 						out.push_back(wmax);
 					}
 					if (count_max) {
-						double maxv = *it;
-						double mcount = std::count(x.begin(), x.end(), maxv);
+						double mcount=NAN;
+						if (maxv > 0) {
+							mcount = std::count(x.begin(), x.end(), maxv);
+						}
 						out.push_back(mcount);
 					}
 				} else {
@@ -294,23 +316,4 @@ void EcocropModel::run() {
 		}
 	}
 }
-
-	
-/*
-
-std::vector<double> EcocropModel::runbatch(std::vector<double> Ns, std::vector<double> Ps, std::vector<double> Ks, std::vector<double> Ya) {
-	
-	size_t n = Ns.size();
-	std::vector<double> out(n, NAN); 
-	for (size_t i=0; i<n; i++) {
-		if (isnan(Ns[i])) continue;	
-		stem_att = 0.55 * store_att;
-		run();
-		out[i] = store_lim;
-	}
-	return out;
-}	
-*/
-
-
 

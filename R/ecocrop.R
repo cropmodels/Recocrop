@@ -72,13 +72,12 @@ setMethod("control", signature("Rcpp_EcocropModel"),
 		if (lim_fact) {
 			if (any(c(get_max, which_max, count_max))) {
 				warning("if lim_fact=TRUE the *_max options are considered to be FALSE")
-				x$lim_fact = TRUE
 			}
+			x$lim_fact = TRUE
 		}
 		x$which_max <- which_max
 		x$get_max <- get_max
 		x$count_max <- count_max
-		x
 	}
 )
 

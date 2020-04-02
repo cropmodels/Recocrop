@@ -33,6 +33,12 @@ function(x, ..., filename="", overwrite=FALSE, wopt=list())  {
 		names(out) <- nms
 		wopt$names <- NULL
 	}
+	## depends on newer version of terra
+	#if (x$lim_fact) {
+    #	pnames <- m$parameter_names
+	#	att <- data.frame(ID=0:length(pnames))
+	#	lapply(1:12, function(i) setRat(i, att))
+	#}
 	nc <- ncol(out)
 	lapply(preds, terra::readStart)
 	
