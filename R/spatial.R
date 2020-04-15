@@ -1,12 +1,14 @@
 
-if (!isGeneric("runSpatial")) { setGeneric("runSpatial", function(x, ...) standardGeneric("runSpatial")) }	
 
-setMethod("runSpatial", signature(x="Rcpp_EcocropModel"), 
-function(x, ..., filename="", overwrite=FALSE, wopt=list())  {
+setMethod("predict", signature("Rcpp_EcocropModel"), 
+function(object, ..., filename="", overwrite=FALSE, wopt=list())  {
 
 	preds <- list(...)
-	if (length(preds) == 0) stop("no predictor variables")
+	if (length(preds) == 0) {
+		return(run(object))
+	}
 	
+	# use collection?
 	e <- sapply(preds, function(i) as.vector(terra::ext(i)))
 	if (!all(apply(e == e[,1], 1, all))) {
 		stop("extents are not equal")
@@ -27,24 +29,22 @@ function(x, ..., filename="", overwrite=FALSE, wopt=list())  {
 	spreds <- preds[!di]
 		
 	out <- rast(preds[[1]])
-	nms <- x$names()
+	nms <- object$names()
 	nlyr(out) <- length(nms)
 	if (length(wopt$names) != length(nms)) {
 		names(out) <- nms
 		wopt$names <- NULL
 	}
-	## depends on newer version of terra
-	#if (x$lim_fact) {
-    #	pnames <- m$parameter_names
-	#	att <- data.frame(ID=0:length(pnames))
-	#	lapply(1:12, function(i) setRat(i, att))
+	## depends on future version of terra
+	#if (object$lim_fact) {
+    #	levels(out) <- object$parameter_names
 	#}
 	nc <- ncol(out)
 	lapply(preds, terra::readStart)
 	
 	b <- terra::writeStart(out, filename, overwrite, wopt)
 	for (i in 1:b$n) {
-		removePredictor(x, "ALL")
+		removePredictor(object, "ALL")
 		
 		if (length(dpreds) > 0) {
 			v <- lapply(dpreds, function(r) {
@@ -52,7 +52,7 @@ function(x, ..., filename="", overwrite=FALSE, wopt=list())  {
 			})
 			vv <- do.call(cbind, v)
 			names(vv) <- nms[di]
-			dynamicPredictors(x) <- vv
+			dynamicPredictors(object) <- vv
 		}
 		if (length(spreds) > 0) {
 			v <- lapply(spreds, function(r) {
@@ -60,15 +60,15 @@ function(x, ..., filename="", overwrite=FALSE, wopt=list())  {
 			})
 			vv <- do.call(cbind, v)
 			names(vv) <- nms[!di]
-			staticPredictors(x) <- vv
+			staticPredictors(object) <- vv
 		}
 		
-		eco <- run(x)
-		removePredictor(x, "ALL")
+		eco <- run(object)
+		removePredictor(object, "ALL")
 		if (nlyr(out) > 1) {
 			eco <- as.vector(matrix(eco, ncol=nlyr(out), byrow=TRUE))
 		}
-		terra::writeValues(out, eco, c(b$row[i], b$nrows[i]))
+		terra::writeVals(out, eco, b$row[i], b$nrows[i])
 	}
 	lapply(preds, terra::readStop)
 	out <- terra::writeStop(out)

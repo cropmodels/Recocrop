@@ -7,8 +7,8 @@
 \alias{ecocrop}
 \alias{ecocrop,Rcpp_EcocropModel-method}
 
-\alias{parameters<-}
-\alias{parameters<-,Rcpp_EcocropModel,matrix-method}
+\alias{crop<-}
+\alias{crop<-,Rcpp_EcocropModel,matrix-method}
 
 \alias{control}
 \alias{control,Rcpp_EcocropModel-method}
@@ -37,13 +37,13 @@ Next, provide environmental data with the \code{staticPredictors} and/or \code{d
 
 The names of the predictors much match the names in the parameters, but not vice versa. That is, parameters that are not matched by a predictor are ignored.
 
-The main purpose of implementing the model is to do spatial predictions (see \code{link{runSpatial}}).
+The main purpose of implementing the model is to support making spatial predictions with \code{\link{predict}}.
 }
 
 
 \usage{
 ecocrop(crop)
-parameters(x) <- value
+crop(x) <- value
 dynamicPredictors(x) <- value
 staticPredictors(x) <- value
 \S4method{control}{Rcpp_EcocropModel}(x, get_max=FALSE, which_max=FALSE, count_max=FALSE, lim_fact=FALSE, ...)
@@ -51,15 +51,15 @@ run(x, ...)
 }
 
 \arguments{
- \item{crop}{list with ecocrop parameters. See \code{link[ecocropPars]}} 
+ \item{crop}{list with ecocrop parameters. See \code{link[ecocropPars]}}
 
  \item{x}{EcocropModel object}
 
  \item{value}{
  
- \code{parameters} method: matrix with parameters. Each column represents parameters for an environmental variable, and must have a name. The matrix must have four rows that represent the x-coordinates for a table-mountain shaped relative response function (y-coordinates: 0,1,1,0; see the plot in the examples). The only exception is the "duration" parameter with has a single value (in the first row). For functions where only "one tail" is relevant, the values for the other tail can be set to very high or low values, including Inf and -Inf.
+ \code{crop} method: matrix with crop parameters. Each column represents parameters for an environmental variable, and must have a name. The matrix must have four rows that represent the x-coordinates for a table-mountain shaped relative response function (y-coordinates: 0,1,1,0; see the plot in the examples). The only exception is the "duration" parameter with has a single value (in the first row). For functions where only "one tail" is relevant, the values for the other tail can be set to very high or low values, including Inf and -Inf.
 
- \code{predictors} method: matrix with environmental predictor variables. Each column represents an environmental variable, and must have a name that matches a predictor variable. For \code{dynamicPredictors}, the matrix must have 12 rows, or a multiple of 12 rows. For \code{staticPredictors}, the matrix can have any number of rows. The number of rows in \code{staticPredictors} must be 1/12 of the number of rows in the \code{dynamicPredictors}. 
+ \code{predictors} method: matrix with environmental predictor variables. Each column represents an environmental variable, and must have a name that matches a predictor variable. For \code{dynamicPredictors}, the matrix must have 12 rows, or a multiple of 12 rows. For \code{staticPredictors}, the matrix can have any number of rows. The number of rows in \code{staticPredictors} must be 1/12 of the number of rows in the \code{dynamicPredictors}.
  
  Parameters and predictors can be added sequentially; but the length of the predictor variables must match previously supplied data. If the parameter or predictor name already exists, the old values are overwritten. You can include any variable of interest, as long as you have matching names for parameters and predictor variables. You can also \code{\link{removeParameters}} or variables.
  }
@@ -82,7 +82,7 @@ vector
 
 
 \details{
-The model computes a score for each variable in each month. It then takes the lowest (most limiting) score for each month. Then it takes the lowest score for each month and a number of months that follow (the growing season). This number of months is set by the \code{duration} parameter (see \code{\link{ecocropPars}}. 
+The model computes a score for each variable in each month. It then takes the lowest (most limiting) score for each month. Then it takes the lowest score for each month and a number of months that follow (the growing season). This number of months is set by the \code{duration} parameter (see \code{\link{ecocropPars}}). 
 
 You can set the output variables with \code{options}. If all options are \code{FALSE}, the 12 monthly scores are returned.
 }
@@ -96,7 +96,7 @@ potato <- ecocropPars("potato")
 m <- ecocrop(potato)
 
 # add parameters
-parameters(m) <- cbind(clay=c(0,0,10,20))
+crop(m) <- cbind(clay=c(0,0,10,20))
 
 # inspect 
 plot(m)

@@ -1,11 +1,12 @@
 
 if (!isGeneric("run")) { setGeneric("run", function(x, ...) standardGeneric("run")) }	
+if (!isGeneric("predict")) { setGeneric("predict", function(x, ...) standardGeneric("predict")) }	
 
 if (!isGeneric("dynamicPredictors<-")) { setGeneric("dynamicPredictors<-", function(x, value) standardGeneric("dynamicPredictors<-")) }	
 if (!isGeneric("staticPredictors<-")) { setGeneric("staticPredictors<-", function(x, value) standardGeneric("staticPredictors<-")) }	
 
-#if (!isGeneric("crop<-")) { setGeneric("crop<-", function(x, value) standardGeneric("crop<-")) }	
-if (!isGeneric("parameters<-")) { setGeneric("parameters<-", function(x, value) standardGeneric("parameters<-")) }	
+if (!isGeneric("crop<-")) { setGeneric("crop<-", function(x, value) standardGeneric("crop<-")) }	
+#if (!isGeneric("parameters<-")) { setGeneric("parameters<-", function(x, value) standardGeneric("parameters<-")) }	
 #if (!isGeneric("options<-")) { setGeneric("options<-", function(x, value) standardGeneric("options<-")) }	
 
 if (!isGeneric("control")) { setGeneric("control", function(x, ...) standardGeneric("control")) }	
@@ -27,7 +28,7 @@ ecocrop <- function(crop) {
 		if (is.list(crop)) {
 			crop <- crop$parameters
 		}
-		parameters(m) <- crop
+		crop(m) <- crop
 	}
 	m
 }
@@ -73,8 +74,8 @@ setMethod("control", signature("Rcpp_EcocropModel"),
 			if (any(c(get_max, which_max, count_max))) {
 				warning("if lim_fact=TRUE the *_max options are considered to be FALSE")
 			}
-			x$lim_fact = TRUE
 		}
+		x$lim_fact <- lim_fact
 		x$which_max <- which_max
 		x$get_max <- get_max
 		x$count_max <- count_max
@@ -82,7 +83,7 @@ setMethod("control", signature("Rcpp_EcocropModel"),
 )
 
 
-setMethod("parameters<-", signature("Rcpp_EcocropModel", "matrix"), 
+setMethod("crop<-", signature("Rcpp_EcocropModel", "matrix"), 
 	function(x, value) {
 		stopifnot(nrow(value) == 4) 
 		nms <- colnames(value)

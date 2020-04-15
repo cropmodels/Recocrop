@@ -30,7 +30,7 @@ Nothing is returned
 pot <- ecocropPars("potato")
 m <- ecocrop(pot)
 
-parameters(m) <- cbind(clay = c(0, 10, 30, 40))
+crop(m) <- cbind(clay = c(0, 10, 30, 40))
 removeParameters(m, "ph")
 
 dynamicPredictors(m) <- cbind(tavg=rep(15,12), prec=rep(100, 12))

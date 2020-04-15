@@ -1,25 +1,25 @@
-\name{spatial}
+\name{predict}
 
-\alias{runSpatial}
-\alias{runSpatial,Rcpp_EcocropModel-method}
+\alias{predict}
+\alias{predict,Rcpp_EcocropModel-method}
 
 
 \title{
-Spatial EcoCrop model
+Spatial EcoCrop model predictions
 }
 
 \description{
-Make spatial predictions with an EcoCrop model. Create a model, and provide SpatRaster objects as predictors.
+Make spatial predictions with an EcoCrop model. First create a model, then provide that to the predict methods, together with SpatRaster objects as predictors.
 }
 
 
 \usage{
-\S4method{runSpatial}{Rcpp_EcocropModel}(x, ..., filename="", overwrite=FALSE, wopt=list())
+\S4method{predict}{Rcpp_EcocropModel}(object, ..., filename="", overwrite=FALSE, wopt=list())
 }
 
 
 \arguments{
-  \item{x}{EcocropModel object}
+  \item{object}{EcocropModel}
   \item{...}{SpatRaster objects with environmental data}  
   \item{filename}{character. Output filename. Optional}
   \item{overwrite}{logical. If \code{TRUE}, \code{filename} is overwritten}
@@ -60,29 +60,29 @@ control(m, get_max=TRUE)
 
 # run the model, make sure to match 
 # the predictor and parameter names 
-mz <- runSpatial(m, tavg=ta, prec=pr, ph=ph, wopt=list(names="maize"))
+mz <- predict(m, tavg=ta, prec=pr, ph=ph, wopt=list(names="maize"))
 plot(mz)
 
 control(m, get_max=FALSE)
-mz12 <- runSpatial(m, tavg=ta, prec=pr, ph=ph)
+mz12 <- predict(m, tavg=ta, prec=pr, ph=ph)
 plot(mz12[[7:8]])
 
 control(m, lim_fact=TRUE)
-mzlim <- runSpatial(m, tavg=ta, prec=pr+50, ph=ph)
+mzlim <- predict(m, tavg=ta, prec=pr+50, ph=ph)
 plot(mzlim[[7]])
 
-control(m, lim_fact=FALSE)
 
+control(m, get_max=TRUE)
 # make the soil more acidic
 ph2 <- ph - 1.25 
 control(m, get_max=TRUE)
-mzph <- runSpatial(m, tavg=ta, prec=pr, ph=ph2)
+mzph <- predict(m, tavg=ta, prec=pr, ph=ph2)
 plot(mzph)
 
 # more rainfall
 control(m, get_max=TRUE)
 pr2 <- pr + 30 # for each month
-mzpr <- runSpatial(m, tavg=ta, prec=pr2, ph=ph)
+mzpr <- predict(m, tavg=ta, prec=pr2, ph=ph)
 plot(mzpr)
 
 s <- c(mz, mzph, mzpr)
@@ -93,7 +93,7 @@ plot(s)
 crop <- ecocropPars("pearl millet")
 m <- ecocrop(crop)
 control(m, get_max=TRUE)
-pm <- runSpatial(m, prec=pr, tavg=ta, wopt=list(names="Pearl millet"))
+pm <- predict(m, prec=pr, tavg=ta, wopt=list(names="Pearl millet"))
 
 crops <- c(mz, pm)
 plot(crops)
