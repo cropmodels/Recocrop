@@ -2,8 +2,8 @@ Package: ecocrop
 Type: Package
 Title: Implementation of the EcoCrop model for estimating adaptation of plants to environments
 Description: The EcoCrop model estimates environmental suitability for plants using a limiting factor approach for plant growth developed by Hackett (1991) <doi:10.1007/BF00045728>. The implementation in this package is fast and flexible: it allows for the use of any (environmental) predictor variable, both static (e.g. soil pH) and dynamic (monthly climate data).
-Version: 0.1-1
-Date: 2020-04-15
+Version: 0.1-2
+Date: 2020-04-17
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Imports: meteor, terra (>= 0.5-8), methods (>= 0.2-2), Rcpp (>= 0.12.4)
