@@ -167,6 +167,27 @@ void movingmin_circular(std::vector<T>& v, int &window) {
 	v.erase(v.begin()+nmax, v.end());
 }
 
+
+/*
+std::vector<double> pred12to24(std::vector<double> &p, const bool &prec){
+	std::vector<double> out(24);
+	if (prec) {
+		for (size_t i=0; i<12; i++) {
+			p[i] = p[0] / 2;
+		}
+	}
+	out[0] = (p[0] + p[12])/2;
+	out[1] = p[0];
+	for (size_t i=1; i<12; i++) {
+		size_t j = i * 2;
+		out[j] = (p[i] + p[i-1])/2;
+		out[j+1] = p[i];
+	}
+	return out;
+}
+*/
+
+
 bool EcocropModel::predict_dynamic(const size_t pari, const std::vector<double>& preds, std::vector<double> &x, std::vector<double> &mf) {
 	for (size_t i=0; i<nsteps; i++) {
 		if (std::isnan(preds[i])) {
@@ -243,6 +264,27 @@ void EcocropModel::run() {
 		}
 	}
 
+
+/*
+	std::vector<bool> is_prec(predictors.size(), false);
+	std::vector<std::vector<double>> matched_parameters(predictors.size());	
+	for (size_t i=0; i<predictors.size(); i++) {
+		int m = match(parameter_names, predictor_names[i]); 
+		if (m == -1) {
+			std::string txt = "no parameters for " + predictor_names[i]; 
+			messages.push_back(txt);
+			hasError = true;
+			return;
+		} else {
+			matched_parameters[i] = parameters[m];
+			if (predictor_names[i] == "prec") {
+				is_prec[i] = true;
+				for (size_t j=0; j<4; i++) matched_parameters[i][j] = matched_parameters[i][j] / 2;
+			}
+		}
+	}
+
+*/
 	size_t nsummary = 0;
 	bool summary = false;
 	if (!lim_fact) {

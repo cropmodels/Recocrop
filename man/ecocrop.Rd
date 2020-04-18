@@ -89,6 +89,7 @@ You can set the output variables with \code{options}. If all options are \code{F
 
 \examples{
 
+library(ecocrop)
 # Get parameters
 potato <- ecocropPars("potato")
 
