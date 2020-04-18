@@ -48,7 +48,7 @@ ecocropPars <- function(name, ...) {
 		nms <- paste(f[1], "; ", f[3], paste0(" (", f[2], ")"), sep="") 
 		
 		duration <- f$GMIN + min(30, f$GMAX - f$GMIN, na.rm=TRUE)
-		
+		duration <- 15 * round(duration / 15)
 		nmonths <- round(duration / 30)
 	
 		ktmp <- c(f$KTMP-1, f$KTMP+1, Inf, Inf)

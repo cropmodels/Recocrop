@@ -5,12 +5,15 @@ setMethod ("plot" , "Rcpp_EcocropModel",
 		nms <- x$parameter_names
 
 		n <- length(pars)
-		if (missing(nc)) {
+		if (missing(nc) & missing(nr)) {
 			nc <- ceiling(sqrt(n))
-		}
-		if (missing(nr)) {
+			nr <- ceiling(n / nc)
+		} else if (missing(nc)) {
+			nc <- ceiling(n / nr)		
+		} else if (missing(nr)) {
 			nr <- ceiling(n / nc)
 		}
+		
 		old.par <- graphics::par(no.readonly = TRUE) 
 		on.exit(graphics::par(old.par))
 		graphics::par(mfrow=c(nr, nc), mar=c(2.5, 3, 2.5, 1))

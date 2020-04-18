@@ -1,7 +1,7 @@
-Package: ecocrop
+Package: Recocrop
 Type: Package
 Title: Implementation of the EcoCrop model for estimating adaptation of plants to environments
-Description: The EcoCrop model estimates environmental suitability for plants using a limiting factor approach for plant growth developed by Hackett (1991) <doi:10.1007/BF00045728>. The implementation in this package is fast and flexible: it allows for the use of any (environmental) predictor variable, both static (e.g. soil pH) and dynamic (monthly climate data).
+Description: The EcoCrop model estimates environmental suitability for plants using a limiting factor approach for plant growth developed by Hackett (1991) <doi:10.1007/BF00045728>. The implementation in this package is fast and flexible: it allows for the use of any (environmental) predictor variable. Predictors can be either static (e.g. soil pH) or dynamic (monthly precipitation data).
 Version: 0.2-1
 Date: 2020-04-18
 LinkingTo: Rcpp
@@ -10,6 +10,6 @@ Imports: meteor, terra (>= 0.5-8), methods (>= 0.2-2), Rcpp (>= 0.12.4)
 Depends: R (>= 3.5.0)
 Authors@R: c(person("Robert J.", "Hijmans", role = c("cre", "aut"), email = "r.hijmans@gmail.com"), person("Rhys", "Manners", role = "ctb"))
 License: GPL (>=3)
-BugReports: https://github.com/cropmodels/ecocrop/issues
-URL: https://github.com/cropmodels/ecocrop/
+BugReports: https://github.com/cropmodels/Recocrop/issues
+URL: https://github.com/cropmodels/Recocrop/
 

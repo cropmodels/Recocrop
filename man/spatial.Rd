@@ -63,14 +63,14 @@ control(m, get_max=TRUE)
 mz <- predict(m, tavg=ta, prec=pr, ph=ph, wopt=list(names="maize"))
 plot(mz)
 
+# output by 15 day period
 control(m, get_max=FALSE)
 mz12 <- predict(m, tavg=ta, prec=pr, ph=ph)
-plot(mz12[[7:8]])
+plot(mz12[[14:15]])
 
 control(m, lim_fact=TRUE)
 mzlim <- predict(m, tavg=ta, prec=pr+50, ph=ph)
-plot(mzlim[[7]])
-
+plot(mzlim[[14]])
 
 control(m, get_max=TRUE)
 # make the soil more acidic
