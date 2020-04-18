@@ -86,7 +86,18 @@ dynamicPredictors(m) <- dp
 #staticPredictors(m) <- cbind(clay=12)
 
 # run model
-run(m)
+x <- run(m)
+x
+
+y <- matrix(round(x, 1), nrow=2)
+colnames(y) <- month.abb
+rownames(y) <- c("day1", "day15")
+y
+
+dates <- as.Date(paste0("2000-", rep(1:12, each=2), "-", rep(c(1,15), 12)))
+plot(dates, x, las=1, ylab="suitability", xlab="")
+lines(dates, x, col="red")
+
 
 control(m, get_max=TRUE)
 run(m)

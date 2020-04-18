@@ -65,7 +65,7 @@ bool EcocropModel::removeParameter(std::string name) {
 		
 void EcocropModel::setPredictor(std::string name, std::vector<double> p, bool is_dynamic) {
 	size_t np = p.size();
-	size_t nmonths = 12;
+	size_t nmonths = 12 * nyears;
 	if (is_dynamic) {
 		if (!( (np > 0) & ((np % nmonths) == 0))) {
 			hasError = true;
@@ -155,31 +155,35 @@ double approx4(const std::vector<double> &v, const double &x) {
 }	
 
 
-template <typename T>
-void movingmin_circular(std::vector<T>& v, int &window) {
-	unsigned nmax = v.size();
+void EcocropModel::movingmin_circular(std::vector<double>& v, int &window) {
+	unsigned nmax = 24; //v.size();
+	// future: nmax = std::min(24, nyears*12);
 	// window must be < nmax
-	v.insert(v.end(), v.begin(), v.end());
+	if (nyears == 1) {  // recycle the year
+		v.insert(v.end(), v.begin(), v.end());
+	}
 	for (size_t i=0; i<nmax; i++) {
 		for (size_t j=i; j<(i+window); j++) {
 			v[i] = v[i] < v[j] ? v[i] : v[j];
 		}
 	}
+	// keep one year
 	v.erase(v.begin()+nmax, v.end());
 }
 
 
 
-std::vector<double> pred12to24(std::vector<double> &p, const bool &prec){
-	std::vector<double> out(24);
+std::vector<double> halfmonths(std::vector<double> &p, const bool &prec){
+	size_t n = p.size();
+	std::vector<double> out(2 * n);
 	if (prec) {
-		for (size_t i=0; i<12; i++) {
+		for (size_t i=0; i<n; i++) {
 			p[i] = p[i] / 2;
 		}
 	}
-	out[0] = (p[0] + p[11])/2;
+	out[0] = (p[0] + p[n-1])/2;
 	out[1] = p[0];
-	for (size_t i=1; i<12; i++) {
+	for (size_t i=1; i<n; i++) {
 		size_t j = i * 2;
 		out[j] = (p[i] + p[i-1])/2;
 		out[j+1] = p[i];
@@ -250,6 +254,13 @@ void EcocropModel::run() {
 		hasError = true;
 		return;
 	}
+
+	if ((nyears != 1) && (nyears != 2)) {
+		std::string txt = "nyears must be 1 or 2"; 
+		messages.push_back(txt);
+		hasError = true;
+		return;
+	}
 	
 /*
 	std::vector<unsigned> p(predictors.size());
@@ -296,11 +307,12 @@ void EcocropModel::run() {
 	unsigned n = (nsummary > 0) ? (nsummary * vsize) : (nsteps * vsize);
 	out.reserve(n);
 
+	size_t nmonths = 12 * nyears;
+
 	bool success = true;
 	std::vector<double> x(nsteps, 1);
 	std::vector<double> mf(nsteps, 0);
 
-	size_t nmonths = 12;
 	int season = std::ceil((double)duration / 15);
 
 	for (size_t i=0; i<vsize; i++) {
@@ -314,7 +326,7 @@ void EcocropModel::run() {
 		for (size_t j=0; j<predictors.size(); j++) {
 			if (dynamic[j]) {
 				std::vector<double> preds(predictors[j].begin()+dstart, predictors[j].begin()+dend);
-				preds = pred12to24(preds, is_prec[j]);
+				preds = halfmonths(preds, is_prec[j]);
 				success = predict_dynamic(j, preds, x, mf);
 			} else {
 				double pred = predictors[j][i];				

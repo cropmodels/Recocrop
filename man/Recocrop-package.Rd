@@ -19,7 +19,7 @@ Default *parameters* are taken from the FAO EcoCrop database at \url{http://ecoc
 
 *References*
 
-Hackett, C, 1991. Mobilising environmental information about lesser-known plants: the value of two neglected levels of description. Agroforestery Systems 14, 131-143. https://doi.org/10.1007/BF00045728
+Hackett, C, 1991. Mobilising environmental information about lesser-known plants: the value of two neglected levels of description. Agroforestery Systems 14: 131-143. https://doi.org/10.1007/BF00045728
 
 Hijmans RJ., L. Guarino, C Bussink, P Mathur, M Cruz, I Barrentes, E Rojas, 2005. DIVA-GIS. A geographic information system for the analysis of species distribution data. https://diva-gis.org
 

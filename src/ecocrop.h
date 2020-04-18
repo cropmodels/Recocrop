@@ -46,7 +46,7 @@ class EcocropModel {
 		bool removePredictor(std::string name);
 
 		void setOptions(bool _get_max, bool _which_max, bool _count_max, bool _lim_fact);
-
+		void movingmin_circular(std::vector<double>& v, int &window);
 };
 
 
