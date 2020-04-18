@@ -1,15 +1,19 @@
 
 setMethod ("plot" , "Rcpp_EcocropModel", 
-	function(x, ...) {
+	function(x, nr, nc, col="red", ...) {
 		pars <- x$parameters
 		nms <- x$parameter_names
-		n <- length(pars)
-		nc <- ceiling(sqrt(n))
-		nr <- ceiling(n / nc)
 
+		n <- length(pars)
+		if (missing(nc)) {
+			nc <- ceiling(sqrt(n))
+		}
+		if (missing(nr)) {
+			nr <- ceiling(n / nc)
+		}
 		old.par <- graphics::par(no.readonly = TRUE) 
 		on.exit(graphics::par(old.par))
-		graphics::par(mfrow=c(nr, nc), mar=c(2, 3, 2, 1))
+		graphics::par(mfrow=c(nr, nc), mar=c(2.5, 3, 2.5, 1))
 
 		for (i in 1:n) {
 			p <- pars[[i]]
@@ -24,7 +28,7 @@ setMethod ("plot" , "Rcpp_EcocropModel",
 			d <- (p[4] - p[1]) / 4
 			p <- c(p[1]-d, p, p[4]+d)
 			xy <- cbind(p, y)
-			plot(xy, ylab="suitability", las=1, type="l", lwd=2, col="red", yaxs="i", xaxs="i", bty="n")
+			plot(xy, ylab="suitability", las=1, type="l", lwd=2, col=col, yaxs="i", xaxs="i", bty="n")
 			graphics::title(nms[i])
 		}
 	}

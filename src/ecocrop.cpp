@@ -65,18 +65,19 @@ bool EcocropModel::removeParameter(std::string name) {
 		
 void EcocropModel::setPredictor(std::string name, std::vector<double> p, bool is_dynamic) {
 	size_t np = p.size();
+	size_t nmonths = 12;
 	if (is_dynamic) {
-		if (!( (np > 0) & ((np % nsteps) == 0))) {
+		if (!( (np > 0) & ((np % nmonths) == 0))) {
 			hasError = true;
-			std::string txt = "length of " + name + " should be divisible by " + std::to_string(nsteps);
+			std::string txt = "length of " + name + " should be divisible by " + std::to_string(nmonths);
 			messages.push_back(txt);				
 		}
 	} 
 	if (vsize == 0) {
-		vsize = is_dynamic ? np / nsteps : np;
+		vsize = is_dynamic ? np / nmonths : np;
 	} 
 	
-	size_t vvsize = is_dynamic ? vsize * nsteps : vsize;
+	size_t vvsize = is_dynamic ? vsize * nmonths : vsize;
 	if (vvsize != np) {
 		hasError = true;
 		std::string txt = "length of " + name + " should be " + std::to_string(vvsize);
@@ -128,13 +129,13 @@ std::vector<std::string> EcocropModel::names(){
 	std::vector<std::string> s;
 	unsigned ns = (count_max + get_max + which_max);
 	if (lim_fact) {
-		s = {"m_jan", "m_feb", "m_mar", "m_apr", "m_may", "m_jun", "m_jul", "m_aug", "m_sep", "m_oct", "m_nov", "m_dec"};
+		s = {"m_jan-1", "m_jan-15", "m_feb-1", "m_feb-14", "m_mar-1", "m_mar-15", "m_apr-1", "m_apr-15", "m_may-1", "m_may-15", "m_jun-1", "m_jun-15", "m_jul-1", "m_jul-15", "m_aug-1", "m_aug-15", "m_sep-1","m_sep-15", "m_oct-1", "m_oct-15", "m_nov-1", "m_nov-15", "m_dec-1", "m_dec-15"};
 	} else if (ns > 0) {
 		if (get_max)   s.push_back("max");
 		if (which_max) s.push_back("which_max");
 		if (count_max) s.push_back("count_max");
 	} else {
-		s = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
+		s = {"jan-1", "jan-15", "feb-1", "feb-14", "mar-1", "mar-15", "apr-1", "apr-15", "may-1", "may-15", "jun-1", "jun-15", "jul-1", "jul-15", "aug-1", "aug-15", "sep-1","sep-15", "oct-1", "oct-15", "nov-1", "nov-15", "dec-1", "dec-15"};
 	}
 	return s;
 }
@@ -168,15 +169,15 @@ void movingmin_circular(std::vector<T>& v, int &window) {
 }
 
 
-/*
+
 std::vector<double> pred12to24(std::vector<double> &p, const bool &prec){
 	std::vector<double> out(24);
 	if (prec) {
 		for (size_t i=0; i<12; i++) {
-			p[i] = p[0] / 2;
+			p[i] = p[i] / 2;
 		}
 	}
-	out[0] = (p[0] + p[12])/2;
+	out[0] = (p[0] + p[11])/2;
 	out[1] = p[0];
 	for (size_t i=1; i<12; i++) {
 		size_t j = i * 2;
@@ -185,7 +186,6 @@ std::vector<double> pred12to24(std::vector<double> &p, const bool &prec){
 	}
 	return out;
 }
-*/
 
 
 bool EcocropModel::predict_dynamic(const size_t pari, const std::vector<double>& preds, std::vector<double> &x, std::vector<double> &mf) {
@@ -197,7 +197,7 @@ bool EcocropModel::predict_dynamic(const size_t pari, const std::vector<double>&
 			return false;
 		} else {
 			for (size_t i=0; i<nsteps; i++) {
-				double app = approx4(parameters[pari], preds[i]);
+				double app = approx4(pred_pars[pari], preds[i]);
 				if (lim_fact) {
 					if (app < x[i]) {
 						x[i] = app;
@@ -219,7 +219,7 @@ bool EcocropModel::predict_static(const size_t pari, const double& pred, std::ve
 		}
 		return false;
 	} else {
-		double app = approx4(parameters[pari], pred);
+		double app = approx4(pred_pars[pari], pred);
 		if (lim_fact) {
 			for (size_t i=0; i<nsteps; i++) {
 				if (app < x[i]) {
@@ -244,13 +244,14 @@ void EcocropModel::run() {
 	//hasError = false;
 	if (hasError) return;
 	
-	if (duration < 0 || duration > int(nsteps)) {
-		std::string txt = "duration must be between 1 and " + std::to_string(nsteps);; 
+	if ((duration < 1) || (duration > 366)) {
+		std::string txt = "duration must be between 1 and 366"; 
 		messages.push_back(txt);
 		hasError = true;
 		return;
 	}
 	
+/*
 	std::vector<unsigned> p(predictors.size());
 	for (size_t j=0; j<predictors.size() ; j++) {
 		int m = match(parameter_names, predictor_names[j]); 
@@ -263,11 +264,9 @@ void EcocropModel::run() {
 			p[j] = m;
 		}
 	}
-
-
-/*
+*/
 	std::vector<bool> is_prec(predictors.size(), false);
-	std::vector<std::vector<double>> matched_parameters(predictors.size());	
+	pred_pars.resize(predictors.size());	
 	for (size_t i=0; i<predictors.size(); i++) {
 		int m = match(parameter_names, predictor_names[i]); 
 		if (m == -1) {
@@ -276,15 +275,16 @@ void EcocropModel::run() {
 			hasError = true;
 			return;
 		} else {
-			matched_parameters[i] = parameters[m];
+			pred_pars[i] = parameters[m];
 			if (predictor_names[i] == "prec") {
 				is_prec[i] = true;
-				for (size_t j=0; j<4; i++) matched_parameters[i][j] = matched_parameters[i][j] / 2;
+				for (size_t j=0; j<4; j++) {
+					pred_pars[i][j] = parameters[m][j] / 2;
+				}
 			}
 		}
 	}
-
-*/
+	
 	size_t nsummary = 0;
 	bool summary = false;
 	if (!lim_fact) {
@@ -300,31 +300,33 @@ void EcocropModel::run() {
 	std::vector<double> x(nsteps, 1);
 	std::vector<double> mf(nsteps, 0);
 
+	size_t nmonths = 12;
+	int season = std::ceil((double)duration / 15);
+
 	for (size_t i=0; i<vsize; i++) {
 		
 		std::fill(x.begin(), x.end(), 1);
 		if (lim_fact) {
 			std::fill(mf.begin(), mf.end(), 0);
 		}
-		
-		size_t dstart = i * nsteps;
-		size_t dend = dstart + nsteps;
-		for (size_t j=0; j<predictors.size() ; j++) {
+		size_t dstart = i * nmonths;
+		size_t dend = dstart + nmonths;
+		for (size_t j=0; j<predictors.size(); j++) {
 			if (dynamic[j]) {
 				std::vector<double> preds(predictors[j].begin()+dstart, predictors[j].begin()+dend);
-				success = predict_dynamic(p[j], preds, x, mf);
+				preds = pred12to24(preds, is_prec[j]);
+				success = predict_dynamic(j, preds, x, mf);
 			} else {
 				double pred = predictors[j][i];				
-				success = predict_static(p[j], pred, x, mf);
+				success = predict_static(j, pred, x, mf);
 			}
 			if (!success) break;
 		}
-		
 		if (success) {
 			if (lim_fact) {	
 				out.insert(out.end(), mf.begin(), mf.end());
 			} else {
-				movingmin_circular(x, duration); 
+				movingmin_circular(x, season); 
 				if (summary) {
 					std::vector<double>::iterator it = std::max_element(x.begin(), x.end());
 					double maxv = *it;

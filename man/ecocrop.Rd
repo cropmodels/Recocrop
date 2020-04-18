@@ -2,7 +2,6 @@
 
 \alias{Rcpp_EcocropModel-class}
 \alias{show,Rcpp_EcocropModel-method}
-\alias{plot,Rcpp_EcocropModel,ANY-method}
 
 \alias{ecocrop}
 \alias{ecocrop,Rcpp_EcocropModel-method}
@@ -88,8 +87,6 @@ You can set the output variables with \code{options}. If all options are \code{F
 }
 
 \examples{
-
-library(ecocrop)
 # Get parameters
 potato <- ecocropPars("potato")
 
@@ -104,10 +101,10 @@ plot(m)
 
 # add predictors
 dp <- cbind(tavg=c(10,12,14,16,18,20,22,20,18,16,14,12), prec=seq(50,182,12))
-dp
+t(dp)
 dynamicPredictors(m) <- dp
 
-staticPredictors(m) <- cbind(clay=12)
+#staticPredictors(m) <- cbind(clay=12)
 
 # run model
 run(m)

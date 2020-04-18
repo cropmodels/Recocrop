@@ -6,20 +6,22 @@
 
 
 class EcocropModel {
+
 	public:
 		EcocropModel();
 		std::string name;
 		bool hasError;
 		
-		size_t nyears = 1;
-		size_t nsteps = 12;
-		int duration = -1;
-		bool get_max = false;
+		size_t nyears  = 1;
+		size_t nsteps  = 24;
+		int duration   = -1;
+		bool get_max   = false;
 		bool which_max = false;
 		bool count_max = false;
-		bool lim_fact = false;
+		bool lim_fact  = false;
 		
 		std::vector<std::vector<double>> parameters;
+		std::vector<std::vector<double>> pred_pars;
 		std::vector<std::string> parameter_names;
 		std::vector<std::vector<double>> predictors;
 		std::vector<std::string> predictor_names;

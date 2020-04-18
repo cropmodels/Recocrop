@@ -18,7 +18,6 @@ RCPP_MODULE(ECOCROP){
 		.method("names", &EcocropModel::names, "names of output variables") 
 		.method("setOptions",  &EcocropModel::setOptions, "set output options") 
 		
-//		.method("runbatch", &EcocropModel::runbatch, "run the model")	
 		.field("duration",  &EcocropModel::duration, "duration")
 		.field("get_max",   &EcocropModel::get_max, "get_max")
 		.field("which_max", &EcocropModel::which_max, "which_max")

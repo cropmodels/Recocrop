@@ -47,15 +47,15 @@ ecocropPars <- function(name, ...) {
 		f <- d[i,]
 		nms <- paste(f[1], "; ", f[3], paste0(" (", f[2], ")"), sep="") 
 		
-		G <- f$GMIN + min(30, f$GMAX - f$GMIN, na.rm=TRUE)
+		duration <- f$GMIN + min(30, f$GMAX - f$GMIN, na.rm=TRUE)
 		
-		duration <- round(G / 30)
+		nmonths <- round(duration / 30)
 	
 		ktmp <- c(f$KTMP-1, f$KTMP+1, Inf, Inf)
 		tavg <- c(f$TMIN, f$TOPMN, f$TOPMX, f$TMAX)
 		
 		prec <- c(f$RMIN, f$ROPMN, f$ROPMX, f$RMAX)
-		prec <- prec / min(12, duration + 1)
+		prec <- prec / min(12, nmonths + 1)
 		ph <- c(f$PHMIN, f$PHOPMN, f$PHOPMX, f$PHMAX)
 		
 		list(
