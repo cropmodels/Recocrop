@@ -25,7 +25,7 @@ class EcocropModel {
 		std::vector<std::string> parameter_names;
 		std::vector<std::vector<double>> predictors;
 		std::vector<std::string> predictor_names;
-		std::vector<bool> is_total;
+		std::vector<bool> is_sum;
 		std::vector<bool> dynamic;
 		size_t vsize = 0;
 		
@@ -48,6 +48,10 @@ class EcocropModel {
 
 		void setOptions(bool _get_max, bool _which_max, bool _count_max, bool _lim_fact);
 		void movingmin_circular(std::vector<double>& v, int &window);
+		
+		std::vector<bool> get_is_sum();
+		void set_is_sum(std::vector<bool> x);
+		
 };
 
 

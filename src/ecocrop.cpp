@@ -26,6 +26,17 @@ EcocropModel::EcocropModel() {
 	hasError = false;
 }
 
+std::vector<bool> EcocropModel::get_is_sum() {
+	return is_sum;
+}
+
+void EcocropModel::set_is_sum(std::vector<bool> x) {
+	if (x.size() == is_sum.size()) {
+		is_sum = x;
+	}
+}
+
+
 template < typename T>
 int match(const std::vector<T>  &v, const T &value) {
 	int result = -1;
@@ -92,9 +103,9 @@ void EcocropModel::setPredictor(std::string name, std::vector<double> p, bool is
 			predictors.push_back(p);
 			dynamic.push_back(is_dynamic);
 			if ((name == "prec") | (name == "rain")) {
-				is_total.push_back(true);
+				is_sum.push_back(true);
 			} else {
-				is_total.push_back(false);
+				is_sum.push_back(false);
 			}
 		}
 	}
@@ -107,14 +118,14 @@ bool EcocropModel::removePredictor(std::string name) {
 		predictors.erase(predictors.begin()+m);
 		predictor_names.erase(predictor_names.begin()+m);
 		dynamic.erase(dynamic.begin()+m);
-		is_total.erase(is_total.begin()+m);
+		is_sum.erase(is_sum.begin()+m);
 		if (predictors.size() == 0) vsize = 0;
 		return true;
 	} else if (name == "ALL") {
 		predictors.resize(0);
 		predictor_names.resize(0);
 		dynamic.resize(0);
-		is_total.resize(0);
+		is_sum.resize(0);
 		vsize = 0;
 		return true;
 	}
@@ -293,7 +304,7 @@ void EcocropModel::run() {
 			return;
 		} else {
 			pred_pars[i] = parameters[m];
-			if (is_total[i]) {
+			if (is_sum[i]) {
 				for (size_t j=0; j<4; j++) {
 					pred_pars[i][j] = parameters[m][j] / 2;
 				}
@@ -331,7 +342,7 @@ void EcocropModel::run() {
 		for (size_t j=0; j<predictors.size(); j++) {
 			if (dynamic[j]) {
 				std::vector<double> preds(predictors[j].begin()+dstart, predictors[j].begin()+dend);
-				preds = halfmonths(preds, is_total[j]);
+				preds = halfmonths(preds, is_sum[j]);
 				success = predict_dynamic(j, preds, x, mf);
 			} else {
 				double pred = predictors[j][i];				

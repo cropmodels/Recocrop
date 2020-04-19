@@ -83,7 +83,7 @@ dp <- cbind(tavg=c(10,12,14,16,18,20,22,20,18,16,14,12), prec=seq(50,182,12))
 t(dp)
 dynamicPredictors(m) <- dp
 
-#staticPredictors(m) <- cbind(clay=12)
+staticPredictors(m) <- cbind(clay=12)
 
 # run model
 x <- run(m)

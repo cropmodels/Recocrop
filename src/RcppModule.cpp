@@ -17,9 +17,10 @@ RCPP_MODULE(ECOCROP){
 		.method("run", &EcocropModel::run, "run") 
 		.method("names", &EcocropModel::names, "names of output variables") 
 		.method("setOptions",  &EcocropModel::setOptions, "set output options") 
+
+		.property("is_sum", &EcocropModel::get_is_sum, &EcocropModel::set_is_sum, "sum or average?" )
 		
 		.field("nyears",  &EcocropModel::nyears, "nyears")
-		.field("is_total",  &EcocropModel::is_total, "is_total")
 		.field("duration",  &EcocropModel::duration, "duration")
 		.field("get_max",   &EcocropModel::get_max, "get_max")
 		.field("which_max", &EcocropModel::which_max, "which_max")
