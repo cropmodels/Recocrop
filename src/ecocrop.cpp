@@ -91,6 +91,11 @@ void EcocropModel::setPredictor(std::string name, std::vector<double> p, bool is
 			predictor_names.push_back(name);
 			predictors.push_back(p);
 			dynamic.push_back(is_dynamic);
+			if ((name == "prec") | (name == "rain")) {
+				is_total.push_back(true);
+			} else {
+				is_total.push_back(false);
+			}
 		}
 	}
 };
@@ -102,12 +107,14 @@ bool EcocropModel::removePredictor(std::string name) {
 		predictors.erase(predictors.begin()+m);
 		predictor_names.erase(predictor_names.begin()+m);
 		dynamic.erase(dynamic.begin()+m);
+		is_total.erase(is_total.begin()+m);
 		if (predictors.size() == 0) vsize = 0;
 		return true;
 	} else if (name == "ALL") {
 		predictors.resize(0);
 		predictor_names.resize(0);
 		dynamic.resize(0);
+		is_total.resize(0);
 		vsize = 0;
 		return true;
 	}
@@ -276,7 +283,6 @@ void EcocropModel::run() {
 		}
 	}
 */
-	std::vector<bool> is_prec(predictors.size(), false);
 	pred_pars.resize(predictors.size());	
 	for (size_t i=0; i<predictors.size(); i++) {
 		int m = match(parameter_names, predictor_names[i]); 
@@ -287,8 +293,7 @@ void EcocropModel::run() {
 			return;
 		} else {
 			pred_pars[i] = parameters[m];
-			if (predictor_names[i] == "prec") {
-				is_prec[i] = true;
+			if (is_total[i]) {
 				for (size_t j=0; j<4; j++) {
 					pred_pars[i][j] = parameters[m][j] / 2;
 				}
@@ -321,12 +326,12 @@ void EcocropModel::run() {
 		if (lim_fact) {
 			std::fill(mf.begin(), mf.end(), 0);
 		}
-		size_t dstart = i * nmonths;
-		size_t dend = dstart + nmonths;
+		size_t dstart = i * nmonths * nyears;
+		size_t dend = dstart + nmonths * nyears;
 		for (size_t j=0; j<predictors.size(); j++) {
 			if (dynamic[j]) {
 				std::vector<double> preds(predictors[j].begin()+dstart, predictors[j].begin()+dend);
-				preds = halfmonths(preds, is_prec[j]);
+				preds = halfmonths(preds, is_total[j]);
 				success = predict_dynamic(j, preds, x, mf);
 			} else {
 				double pred = predictors[j][i];				

@@ -25,6 +25,7 @@ class EcocropModel {
 		std::vector<std::string> parameter_names;
 		std::vector<std::vector<double>> predictors;
 		std::vector<std::string> predictor_names;
+		std::vector<bool> is_total;
 		std::vector<bool> dynamic;
 		size_t vsize = 0;
 		

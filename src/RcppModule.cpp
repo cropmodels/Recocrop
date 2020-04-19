@@ -19,6 +19,7 @@ RCPP_MODULE(ECOCROP){
 		.method("setOptions",  &EcocropModel::setOptions, "set output options") 
 		
 		.field("nyears",  &EcocropModel::nyears, "nyears")
+		.field("is_total",  &EcocropModel::is_total, "is_total")
 		.field("duration",  &EcocropModel::duration, "duration")
 		.field("get_max",   &EcocropModel::get_max, "get_max")
 		.field("which_max", &EcocropModel::which_max, "which_max")
