@@ -49,9 +49,15 @@ class EcocropModel {
 		void setOptions(bool _get_max, bool _which_max, bool _count_max, bool _lim_fact);
 		void movingmin_circular(std::vector<double>& v, int &window);
 		
-		std::vector<bool> get_is_sum();
-		void set_is_sum(std::vector<bool> x);
+		std::vector<bool> get_is_sum() {return is_sum;};
+		void set_is_sum(std::vector<bool> x) {
+			if (x.size() == is_sum.size()) {
+				is_sum = x;
+			}
+		}
+	
+		std::vector<double> get_out() { return out; };
+		void set_out(std::vector<double> x) { out.resize(0); };
 		
 };
-
 

@@ -26,16 +26,6 @@ EcocropModel::EcocropModel() {
 	hasError = false;
 }
 
-std::vector<bool> EcocropModel::get_is_sum() {
-	return is_sum;
-}
-
-void EcocropModel::set_is_sum(std::vector<bool> x) {
-	if (x.size() == is_sum.size()) {
-		is_sum = x;
-	}
-}
-
 
 template < typename T>
 int match(const std::vector<T>  &v, const T &value) {
@@ -272,6 +262,7 @@ void EcocropModel::run() {
 		hasError = true;
 		return;
 	}
+	int season = std::ceil((double)duration / 15);
 
 	if ((nyears != 1) && (nyears != 2)) {
 		std::string txt = "nyears must be 1 or 2"; 
@@ -305,9 +296,11 @@ void EcocropModel::run() {
 		} else {
 			pred_pars[i] = parameters[m];
 			if (is_sum[i]) {
+				double d = std::min(24, season + 2);
 				for (size_t j=0; j<4; j++) {
-					pred_pars[i][j] = parameters[m][j] / 2;
+					pred_pars[i][j] = parameters[m][j] / d;
 				}
+
 			}
 		}
 	}
@@ -329,7 +322,6 @@ void EcocropModel::run() {
 	std::vector<double> x(nsteps, 1);
 	std::vector<double> mf(nsteps, 0);
 
-	int season = std::ceil((double)duration / 15);
 
 	for (size_t i=0; i<vsize; i++) {
 		

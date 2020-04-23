@@ -68,8 +68,9 @@ function(object, ..., filename="", overwrite=FALSE, wopt=list())  {
 		if (nlyr(out) > 1) {
 			eco <- as.vector(matrix(eco, ncol=nlyr(out), byrow=TRUE))
 		}
-		terra::writeValues(out, eco, b$row[i]-1, b$nrows[i])
+		terra::writeValues(out, eco, b$row[i], b$nrows[i])
 	}
+	object$out <- 0
 	lapply(preds, terra::readStop)
 	out <- terra::writeStop(out)
 	return(out)

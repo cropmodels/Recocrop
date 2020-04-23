@@ -18,6 +18,7 @@ RCPP_MODULE(ECOCROP){
 		.method("names", &EcocropModel::names, "names of output variables") 
 		.method("setOptions",  &EcocropModel::setOptions, "set output options") 
 
+		.property("out", &EcocropModel::get_out, &EcocropModel::set_out, "get model output or reset it") 
 		.property("is_sum", &EcocropModel::get_is_sum, &EcocropModel::set_is_sum, "sum or average?" )
 		
 		.field("nyears",  &EcocropModel::nyears, "nyears")
@@ -31,7 +32,6 @@ RCPP_MODULE(ECOCROP){
 		.field_readonly("parameter_names", &EcocropModel::parameter_names, "parameter_names")
 		.field_readonly("predictors", &EcocropModel::predictors, "predictors")
 		.field_readonly("predictor_names", &EcocropModel::predictor_names, "predictor_names")
-		.field_readonly("out", &EcocropModel::out, "out")
 		.field("hasError", &EcocropModel::hasError, "hasError")
 		.field("messages", &EcocropModel::messages, "messages")
 	;			

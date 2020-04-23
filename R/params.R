@@ -1,6 +1,6 @@
 
 ecocropPars <- function(name, ...) {
-	fname <- system.file("parameters/ecocrop.rds", package="ecocrop")
+	fname <- system.file("parameters/ecocrop.rds", package="Recocrop")
 	d <- readRDS(fname)
 	d$NAME = gsub("\\*", "", d$NAME)
 	d$NAME <- trimws(d$NAME)
@@ -52,10 +52,8 @@ ecocropPars <- function(name, ...) {
 		nmonths <- round(duration / 30)
 	
 		ktmp <- c(f$KTMP-1, f$KTMP+1, Inf, Inf)
-		tavg <- c(f$TMIN, f$TOPMN, f$TOPMX, f$TMAX)
-		
+		tavg <- c(f$TMIN, f$TOPMN, f$TOPMX, f$TMAX)		
 		prec <- c(f$RMIN, f$ROPMN, f$ROPMX, f$RMAX)
-		prec <- prec / min(12, nmonths + 1)
 		ph <- c(f$PHMIN, f$PHOPMN, f$PHOPMX, f$PHMAX)
 		
 		list(
