@@ -49,7 +49,7 @@ ecocropPars <- function(name, ...) {
 		
 		duration <- f$GMIN + min(30, f$GMAX - f$GMIN, na.rm=TRUE)
 		duration <- 15 * round(duration / 15)
-		nmonths <- round(duration / 30)
+		#nmonths <- round(duration / 30)
 	
 		ktmp <- c(f$KTMP-1, f$KTMP+1, Inf, Inf)
 		tavg <- c(f$TMIN, f$TOPMN, f$TOPMX, f$TMAX)		
