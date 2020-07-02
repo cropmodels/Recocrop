@@ -58,7 +58,7 @@ head(pp)
 
 # to see the entire database, including parameters 
 # that are not automatically extracted do
-fname <- system.file("parameters/ecocrop.rds", package="ecocrop")
+fname <- system.file("parameters/ecocrop.rds", package="Recocrop")
 d <- readRDS(fname)
 head(d)
 }

@@ -36,9 +36,9 @@ SpatRaster
 
 ## Predictors 
 library(terra)
-fta <- system.file("ex/ta.tif", package="ecocrop")
-fpr <- system.file("ex/pr.tif", package="ecocrop")
-fph <- system.file("ex/ph.tif", package="ecocrop")
+fta <- system.file("ex/ta.tif", package="Recocrop")
+fpr <- system.file("ex/pr.tif", package="Recocrop")
+fph <- system.file("ex/ph.tif", package="Recocrop")
 
 # monthly average temperature
 ta <- rast(fta)

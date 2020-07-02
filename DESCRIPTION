@@ -2,8 +2,8 @@ Package: Recocrop
 Type: Package
 Title: Implementation of the ecocrop model for estimating adaptation of plants to environments
 Description: The ecocrop model estimates environmental suitability for plants using a limiting factor approach for plant growth following Hackett (1991) <doi:10.1007/BF00045728>. The implementation in this package is fast and flexible: it allows for the use of any (environmental) predictor variable. Predictors can be either static (for example, soil pH) or dynamic (for example, monthly precipitation data).
-Version: 0.2-2
-Date: 2020-04-23
+Version: 0.2-3
+Date: 2020-07-01
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Imports: meteor, terra (>= 0.5-12), methods (>= 0.2-2), Rcpp (>= 0.12.4)
