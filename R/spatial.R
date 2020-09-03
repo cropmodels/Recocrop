@@ -7,27 +7,33 @@ function(object, ..., filename="", overwrite=FALSE, wopt=list())  {
 	if (length(preds) == 0) {
 		return(run(object))
 	}
-	
-	# use collection?
-	e <- sapply(preds, function(i) as.vector(terra::ext(i)))
-	if (!all(apply(e == e[,1], 1, all))) {
-		stop("extents are not equal")
-	}
-	r <- sapply(preds, terra::res)
-	if (!(all(apply(r == r[,1], 1, all)))) {
-		stop("resolutions are not equal")	
-	}
-
 	nms <- trimws(names(preds))
 	if (is.null(nms) | any(nms=="")) stop ("SpatRaster arguments must be named")
 	# check if nms in model
-
+	
+	if (length(nms) > 1) {
+		sapply(2:length(nms), function(i)compareGeom(preds[[1]], preds[[i]], lyrs=FALSE)) 
+	}
+	
 	nlyrs <- sapply(preds, terra::nlyr)
 	if (!all(nlyrs %in% c(1, 12))) stop("all SpatRaster objects must have either 1 or 12 layers")
 	di <- nlyrs == 12
 	dpreds <- preds[di]
 	spreds <- preds[!di]
-		
+
+	
+
+	# use collection?
+	#e <- sapply(preds, function(i) as.vector(terra::ext(i)))
+	#if (!all(apply(e == e[,1], 2, all))) {
+	#	stop("extents are not equal")
+	#}
+	#r <- sapply(preds, terra::res)
+	#if (!(all(apply(r == r[,1], 1, all)))) {
+	#	stop("resolutions are not equal")	
+	#}
+	# just for checking extent/resolution
+	
 	out <- rast(preds[[1]])
 	nms <- object$names()
 	nlyr(out) <- length(nms)
