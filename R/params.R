@@ -54,7 +54,20 @@ ecocropPars <- function(name, ...) {
 		ktmp <- c(f$KTMP-1, f$KTMP+1, Inf, Inf)
 		tavg <- c(f$TMIN, f$TOPMN, f$TOPMX, f$TMAX)		
 		prec <- c(f$RMIN, f$ROPMN, f$ROPMX, f$RMAX)
-		prec <- prec / ((f$GMAX - f$GMIN) / 30)
+		diva <- (f$GMAX + f$GMIN) / 2
+		if (f$GMAX > f$GMIN) {
+			div1 <- (diva + 30)
+			div2 <- (diva - 30)
+			if (div1 < div2) {
+				tmp <- div1
+				div1 <- div2
+				div2 <- tmp
+			}
+		} else {
+			div1 <- div2 <- diva
+		}
+		rdiv <- c(div1, mean(diva, div1), mean(diva, div2), div2) / 30
+		prec <- round(prec / rdiv)
 		ph <- c(f$PHMIN, f$PHOPMN, f$PHOPMX, f$PHMAX)
 		
 		list(
@@ -65,5 +78,5 @@ ecocropPars <- function(name, ...) {
 	}
 }
 
-
+ maize = ecocropPars("maize")
 #ecocropPars("potato")
