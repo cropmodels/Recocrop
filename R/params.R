@@ -58,11 +58,6 @@ ecocropPars <- function(name, ...) {
 		if (f$GMAX > f$GMIN) {
 			div1 <- (diva + 30)
 			div2 <- (diva - 30)
-			if (div1 < div2) {
-				tmp <- div1
-				div1 <- div2
-				div2 <- tmp
-			}
 		} else {
 			div1 <- div2 <- diva
 		}
