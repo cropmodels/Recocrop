@@ -184,11 +184,11 @@ void EcocropModel::movingmin_circular(std::vector<double>& v, int &window) {
 std::vector<double> halfmonths(std::vector<double> &p, const bool &prec){
 	size_t n = p.size();
 	std::vector<double> out(2 * n);
-	if (prec) {
-		for (size_t i=0; i<n; i++) {
-			p[i] = p[i] / 2;
-		}
-	}
+	//if (prec) {
+		//for (size_t i=0; i<n; i++) {
+		//	p[i] = p[i] / 2;
+		//}
+	//}
 	out[0] = (p[0] + p[n-1])/2;
 	out[1] = p[0];
 	for (size_t i=1; i<n; i++) {
@@ -295,13 +295,12 @@ void EcocropModel::run() {
 			return;
 		} else {
 			pred_pars[i] = parameters[m];
-			if (is_sum[i]) {
-				double d = std::min(24, season + 2);
-				for (size_t j=0; j<4; j++) {
-					pred_pars[i][j] = parameters[m][j] / d;
-				}
-
-			}
+			//if (is_sum[i]) {
+			//	double d = std::min(24, season + 2);
+			//	for (size_t j=0; j<4; j++) {
+			//		pred_pars[i][j] = parameters[m][j] / d;
+			//	}
+			//}
 		}
 	}
 	

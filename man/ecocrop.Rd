@@ -23,7 +23,7 @@ Create and run an EcoCrop model to asses the environmental suitability of a loca
 
 First create a model object with the \code{ecocrop} method. Then set parameters describing the environmental requirements of a species or other taxon. The \code{\link{ecocropPars}} method provides default parameters for 1710 taxa.
 
-Next, provide environmental data with the \code{\link[=staticPredictors<-]{staticPredictors}} and/or \code{\link[=dynamicPredictors<-]{dynamicPredictors}} method. Static predictors, such as soil pH, do not change throughout the year. In contrast, dynamic predictors, such as temperature and rainfall, vary over time. In the current implementation the time step is months. Therefore, dynamic variables must have 12 values, one for much month of the year, or multiples of 12 values, to represent multiple years or locations. 
+Next, provide environmental data with the \code{\link[=staticPredictors<-]{staticPredictors}} and/or \code{\link[=dynamicPredictors<-]{dynamicPredictors}} method. Static predictors, such as soil pH, do not change throughout the year. In contrast, dynamic predictors, such as temperature and rainfall, vary over time. In the current implementation the time-step of the input data is months. Therefore, dynamic variables must have 12 values, one for much month of the year, or multiples of 12 values, to represent multiple years or locations. The computations are done in half-month time steps, by interpolating the monthly values.
 
 The names of the predictors much match the names in the parameters, but not vice versa. That is, parameters that are not matched by a predictor are ignored.
 
@@ -42,13 +42,13 @@ ecocrop(crop)
 
  \item{x}{EcocropModel object}
 
- \item{get_max}{logical. If \code{TRUE}, the maximum value (across the 12 months of the year) is returned.}
+ \item{get_max}{logical. If \code{TRUE}, the maximum value (across the time periods of the year) is returned.}
 
  \item{which_max}{logical. If \code{TRUE}, the first month with the maximum value is returned.}
 
  \item{count_max}{logical. If \code{TRUE}, the number of months with the maximum value is returned.}
   
- \item{lim_fact}{logical. If \code{TRUE}, the options above are ignored, the most-limiting factor for each month (or the one that is reached first if there are ties) is also returned.}
+ \item{lim_fact}{logical. If \code{TRUE}, the options above are ignored, the most-limiting factor for each time period (or the one that is reached first if there are ties) is returned.}
   
  \item{...}{additional arguments. None implemented}
 }

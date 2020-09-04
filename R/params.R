@@ -54,11 +54,13 @@ ecocropPars <- function(name, ...) {
 		ktmp <- c(f$KTMP-1, f$KTMP+1, Inf, Inf)
 		tavg <- c(f$TMIN, f$TOPMN, f$TOPMX, f$TMAX)		
 		prec <- c(f$RMIN, f$ROPMN, f$ROPMX, f$RMAX)
+		prec <- prec / ((f$GMAX - f$GMIN) / 30)
 		ph <- c(f$PHMIN, f$PHOPMN, f$PHOPMX, f$PHMAX)
 		
 		list(
 			name=nms, 
-			parameters=cbind(duration=c(duration, NA, f$GMIN, f$GMAX), ktmp=ktmp, tavg=tavg, prec=prec, ph=ph)
+			parameters=cbind(duration=c(duration, NA, f$GMIN, f$GMAX), 
+			ktmp=ktmp, tavg=tavg, prec=prec, ph=ph)
 		)
 	}
 }
