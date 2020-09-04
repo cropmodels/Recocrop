@@ -66,7 +66,7 @@ ecocropPars <- function(name, ...) {
 		} else {
 			div1 <- div2 <- diva
 		}
-		rdiv <- c(div1, mean(diva, div1), mean(diva, div2), div2) / 30
+		rdiv <- c(div1, mean(c(diva, div1)), mean(c(diva, div2)), div2) / 30
 		prec <- round(prec / rdiv)
 		ph <- c(f$PHMIN, f$PHOPMN, f$PHOPMX, f$PHMAX)
 		
