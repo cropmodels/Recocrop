@@ -21,8 +21,6 @@ function(object, ..., filename="", overwrite=FALSE, wopt=list())  {
 	dpreds <- preds[di]
 	spreds <- preds[!di]
 
-	
-
 	# use collection?
 	#e <- sapply(preds, function(i) as.vector(terra::ext(i)))
 	#if (!all(apply(e == e[,1], 2, all))) {
@@ -48,7 +46,7 @@ function(object, ..., filename="", overwrite=FALSE, wopt=list())  {
 	nc <- ncol(out)
 	lapply(preds, terra::readStart)
 	
-	b <- terra::writeStart(out, filename, overwrite, wopt)
+	b <- terra::writeStart(out, filename, overwrite, wopt=wopt)
 	for (i in 1:b$n) {
 		removePredictor(object, "ALL")
 		
@@ -84,3 +82,4 @@ function(object, ..., filename="", overwrite=FALSE, wopt=list())  {
 )
 
 # SpatRaster::setCategories(unsigned layer, std::vector<std::string> labs, std::vector<double> levs
+
