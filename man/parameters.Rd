@@ -6,7 +6,7 @@ Crop parameters
 }
 
 \description{
-Default ecocrop parameters for 1710 taxa. The values are from (or derived from) the \href{http://www.fao.org/land-water/land/land-governance/land-resources-planning-toolbox/category/details/en/c/1027491/}{ecocrop database} of the Food and Agricultural Organization (FAO) of the United Nations.
+Default ecocrop parameters for 1710 taxa. The values are derived from values that used to be available on the website of the Food and Agricultural Organization (FAO) of the United Nations.
 
 User beware: These parameters are expert opinion and not necessarily optimal. 
 }

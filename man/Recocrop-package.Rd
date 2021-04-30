@@ -17,7 +17,7 @@ The dynamic variables must have a monthly time-step. The values are interpolated
 
 The *model* with this name was first implemented in DIVA-GIS (Hijmans et al., 2005) and later in the R package 'dismo' and elsewhere. The modeling approach is based on the 'Plantgro' approach (Hackett, 1991). 
 
-Default *parameters* are taken from the \href{http://ecocrop.fao.org/ecocrop/srv/en/home}{FAO EcoCrop database}. 
+Default *parameters* used to be available from the UN FAO. 
 }
 
 
