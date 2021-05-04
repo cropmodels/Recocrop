@@ -23,7 +23,7 @@ ecocropPars <- function(name, ...) {
 	}
 	
 	if (length(i) > 1) {
-		cat("multiple matches found, use scientific name\n")
+		print("multiple matches found, use scientific name\n")
 		d <- d[i, c(1,3)]
 		rownames(d) <- NULL
 		print(d)
@@ -34,9 +34,9 @@ ecocropPars <- function(name, ...) {
 		a2 <- agrep(nam, d2)
 		a3 <- agrep(nam, d3)
 		a <- unique(c(a1, a2, a3))
-		cat(paste0('"', name, '" not found. \n'))
+		print(paste0('"', name, '" not found. \n'))
 		if (length(a) > 0) {
-			cat("Did you mean one of these?\n")
+			print("Did you mean one of these?\n")
 			d <- d[a, c(1,3)]
 			rownames(d) <- NULL
 			print(d)
@@ -72,6 +72,3 @@ ecocropPars <- function(name, ...) {
 		)
 	}
 }
-
- maize = ecocropPars("maize")
-#ecocropPars("potato")

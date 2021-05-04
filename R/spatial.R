@@ -81,5 +81,3 @@ function(object, ..., filename="", overwrite=FALSE, wopt=list())  {
 }
 )
 
-# SpatRaster::setCategories(unsigned layer, std::vector<std::string> labs, std::vector<double> levs
-
