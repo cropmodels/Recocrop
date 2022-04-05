@@ -92,7 +92,7 @@ void EcocropModel::setPredictor(std::string name, std::vector<double> p, bool is
 			predictor_names.push_back(name);
 			predictors.push_back(p);
 			dynamic.push_back(is_dynamic);
-			if ((name == "prec") | (name == "rain")) {
+			if ((name == "prec") || (name == "rain")) {
 				is_sum.push_back(true);
 			} else {
 				is_sum.push_back(false);

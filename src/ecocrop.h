@@ -9,6 +9,8 @@ class EcocropModel {
 
 	public:
 		EcocropModel();
+		virtual ~EcocropModel(){}
+		
 		std::string name;
 		bool hasError;
 		
